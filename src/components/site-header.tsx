@@ -1,0 +1,63 @@
+import Link from "next/link";
+import { auth } from "@/auth";
+import { SignOutButton } from "@/components/sign-out-button";
+
+const nav = [
+  { label: "작가", href: "/#artists" },
+  { label: "교육", href: "/#education" },
+  { label: "작품", href: "/artworks" },
+  { label: "굿즈", href: "/goods" },
+  { label: "전시·협회", href: "/#exhibitions" },
+  { label: "문의", href: "/#contact" },
+];
+
+export async function SiteHeader() {
+  const session = await auth();
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-base/90 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <Link href="/" className="font-[var(--font-serif-en)] text-xl tracking-[0.2em]">
+          ARTLINK
+        </Link>
+        <nav className="hidden items-center gap-8 text-sm md:flex">
+          {nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+            >
+              {item.label}
+            </Link>
+          ))}
+          {session?.user ? (
+            <>
+              <Link
+                href={session.user.role === "ADMIN" ? "/admin" : "/mypage"}
+                className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+              >
+                {session.user.role === "ADMIN" ? "관리자" : "마이페이지"}
+              </Link>
+              <SignOutButton />
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+              >
+                로그인
+              </Link>
+              <Link
+                href="/signup"
+                className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+              >
+                회원가입
+              </Link>
+            </>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+}

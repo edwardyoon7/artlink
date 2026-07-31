@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root {
+  --color-base: #f5f1ea;
+  --color-ink: #1f2937;
+  --color-terracotta: #c1602e;
+}
+
+@theme inline {
+  --color-base: var(--color-base);
+  --color-ink: var(--color-ink);
+  --color-terracotta: var(--color-terracotta);
+  --font-serif-kr: var(--font-noto-serif-kr);
+  --font-sans-kr: var(--font-noto-sans-kr);
+  --font-serif-en: var(--font-cormorant);
+}
+
+body {
+  background: var(--color-base);
+  color: var(--color-ink);
+}

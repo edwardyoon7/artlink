@@ -1,0 +1,210 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum Role {
+  APPLICANT
+  ADMIN
+  COLLECTOR
+}
+
+enum ApplicationType {
+  PRO
+  AMATEUR
+}
+
+enum ApplicationStatus {
+  PENDING
+  RECEIVED
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String            @id @default(cuid())
+  name         String
+  email        String            @unique
+  phone        String
+  passwordHash String
+  role         Role              @default(APPLICANT)
+  artistLevel  ApplicationType?
+  createdAt    DateTime          @default(now())
+  applications Application[]
+  artworks     Artwork[]
+  coachingBookings CoachingBooking[]
+  goods        Goods[]
+}
+
+model Application {
+  id          String            @id @default(cuid())
+  type        ApplicationType
+  status      ApplicationStatus @default(PENDING)
+  name        String
+  phone       String
+  email       String
+  education   String?
+  career      String?
+  exhibitionCount Int?
+  motivation  String?
+  memo        String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  user        User              @relation(fields: [userId], references: [id])
+  userId      String
+  documents   Document[]
+}
+
+model Document {
+  id            String      @id @default(cuid())
+  filename      String
+  storedPath    String
+  uploadedAt    DateTime    @default(now())
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId String
+}
+
+enum ArtworkStatus {
+  DRAFT
+  LISTED
+  SOLD
+}
+
+model Artwork {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  price       Int
+  imageUrl    String?
+  status      ArtworkStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  artist      User          @relation(fields: [artistId], references: [id])
+  artistId    String
+  payment     Payment?
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model CoachingBooking {
+  id            String        @id @default(cuid())
+  curriculum    String
+  region        String?
+  preferredDate DateTime
+  status        BookingStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  artist        User          @relation(fields: [artistId], references: [id])
+  artistId      String
+  instructor    Instructor?   @relation(fields: [instructorId], references: [id])
+  instructorId  String?
+  payment       Payment?
+}
+
+enum Weekday {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+  SAT
+  SUN
+}
+
+model Instructor {
+  id          String                   @id @default(cuid())
+  name        String
+  education   String?
+  exhibitions String?
+  awards      String?
+  createdAt   DateTime                 @default(now())
+  regions     InstructorRegion[]
+  availableDays InstructorAvailability[]
+  bookings    CoachingBooking[]
+}
+
+model InstructorRegion {
+  id           String     @id @default(cuid())
+  region       String
+  instructor   Instructor @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  instructorId String
+
+  @@unique([instructorId, region])
+}
+
+model InstructorAvailability {
+  id           String     @id @default(cuid())
+  weekday      Weekday
+  instructor   Instructor @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  instructorId String
+
+  @@unique([instructorId, weekday])
+}
+
+enum PaymentType {
+  LISTING_FEE
+  COACHING_FEE
+  GOODS_IDEA_FEE
+  GOODS_PRODUCTION_FEE
+  GOODS_SAMPLE_FEE
+}
+
+enum PaymentStatus {
+  WAITING
+  CONFIRMED
+  REJECTED
+}
+
+model Payment {
+  id                String            @id @default(cuid())
+  type              PaymentType
+  amount            Int
+  depositorName     String?
+  status            PaymentStatus     @default(WAITING)
+  confirmedAt       DateTime?
+  createdAt         DateTime          @default(now())
+  artwork           Artwork?          @relation(fields: [artworkId], references: [id])
+  artworkId         String?           @unique
+  coachingBooking   CoachingBooking?  @relation(fields: [coachingBookingId], references: [id])
+  coachingBookingId String?           @unique
+  goods             Goods?            @relation(fields: [goodsId], references: [id])
+  goodsId           String?
+}
+
+enum GoodsStage {
+  REQUESTED
+  CONSULTING
+  COMMISSIONED
+  SAMPLE_REVIEW
+  APPROVED
+  LISTED
+  SOLD_OUT
+}
+
+model Goods {
+  id             String     @id @default(cuid())
+  title          String
+  concept        String
+  targetAudience String?
+  stage          GoodsStage @default(REQUESTED)
+  sampleImageUrl String?
+  price          Int?
+  description    String?
+  imageUrl       String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  artist         User       @relation(fields: [artistId], references: [id])
+  artistId       String
+  payments       Payment[]
+}
