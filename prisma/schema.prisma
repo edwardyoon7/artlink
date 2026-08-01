@@ -80,6 +80,7 @@ enum ArtworkStatus {
 model Artwork {
   id          String        @id @default(cuid())
   title       String
+  caption     String?
   description String?
   price       Int
   imageUrl    String?

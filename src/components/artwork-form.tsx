@@ -45,6 +45,13 @@ export function ArtworkForm({ suggestion }: { suggestion: Suggestion | null }) {
         />
       </label>
       <label className="block text-sm">
+        <span className="text-ink/70">재료·사이즈 (선택, 예: Hanji mixed with acrylic on canvas - 116.8 x 91 cm)</span>
+        <input
+          name="caption"
+          className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-2 outline-none focus:border-ink"
+        />
+      </label>
+      <label className="block text-sm">
         <span className="text-ink/70">작품 소개 (선택)</span>
         <textarea
           name="description"

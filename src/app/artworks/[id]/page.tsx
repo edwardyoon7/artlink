@@ -55,6 +55,9 @@ export default async function ArtworkDetailPage({
               ARTWORK
             </p>
             <h1 className="mt-2 font-[var(--font-serif-kr)] text-3xl">{artwork.title}</h1>
+            {artwork.caption && (
+              <p className="mt-1 text-xs text-ink/50">{artwork.caption}</p>
+            )}
             <p className="mt-2 text-sm text-ink/60">{artwork.artist.name} 작가</p>
 
             {isLoggedIn ? (

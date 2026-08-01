@@ -21,6 +21,7 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const title = formData.get("title");
+  const caption = formData.get("caption");
   const description = formData.get("description");
   const price = formData.get("price");
   const image = formData.get("image");
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
   const artwork = await prisma.artwork.create({
     data: {
       title,
+      caption: typeof caption === "string" && caption.trim() ? caption.trim() : null,
       description: typeof description === "string" ? description : null,
       price: Math.round(priceNumber),
       artistId: user.id,
