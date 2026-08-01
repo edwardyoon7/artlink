@@ -72,6 +72,12 @@ export function ApplicationForm({
           <Field label="비밀번호 (8자 이상)" name="password" type="password" minLength={8} required />
           <Field label="비밀번호 확인" name="passwordConfirm" type="password" minLength={8} required />
         </div>
+        <Field
+          label="비밀번호 힌트 질문 (비밀번호를 잊었을 때 사용)"
+          name="passwordHintQuestion"
+          required
+        />
+        <Field label="힌트 답변" name="passwordHintAnswer" required />
       </fieldset>
 
       {type === "PRO" ? (

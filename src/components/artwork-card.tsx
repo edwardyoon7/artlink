@@ -1,11 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ARTWORK_CATEGORY_LABELS } from "@/lib/artwork-category";
+import type { ArtworkCategory } from "@/generated/prisma/client";
 
 type Artwork = {
   id: string;
   title: string;
   price: number;
   status: string;
+  category: ArtworkCategory;
   imageUrl: string | null;
   artist: { name: string };
 };
@@ -35,7 +38,7 @@ export function ArtworkCard({ artwork }: { artwork: Artwork }) {
       </div>
       <p className="mt-3 font-[var(--font-serif-kr)]">{artwork.title}</p>
       <p className="text-sm text-ink/60">
-        {artwork.artist.name} · {artwork.price.toLocaleString()}원
+        {artwork.artist.name} · {ARTWORK_CATEGORY_LABELS[artwork.category]} · {artwork.price.toLocaleString()}원
       </p>
     </Link>
   );

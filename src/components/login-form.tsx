@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { signIn, getSession } from "next-auth/react";
 
 export function LoginForm() {
@@ -63,6 +64,11 @@ export function LoginForm() {
       >
         {submitting ? "로그인 중..." : "로그인"}
       </button>
+      <p className="text-center text-sm">
+        <Link href="/forgot-password" className="text-ink/60 underline hover:text-ink">
+          비밀번호를 잊으셨나요?
+        </Link>
+      </p>
     </form>
   );
 }

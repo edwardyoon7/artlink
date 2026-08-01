@@ -29,11 +29,13 @@ enum ApplicationStatus {
 }
 
 model User {
-  id           String            @id @default(cuid())
-  name         String
-  email        String            @unique
-  phone        String
-  passwordHash String
+  id                     String            @id @default(cuid())
+  name                   String
+  email                  String            @unique
+  phone                  String
+  passwordHash           String
+  passwordHintQuestion   String?
+  passwordHintAnswerHash String?
   role         Role              @default(APPLICANT)
   artistLevel  ApplicationType?
   createdAt    DateTime          @default(now())
@@ -77,17 +79,26 @@ enum ArtworkStatus {
   SOLD
 }
 
+enum ArtworkCategory {
+  ORIENTAL_PAINTING
+  WESTERN_PAINTING
+  SCULPTURE
+  OTHER
+  UNCATEGORIZED
+}
+
 model Artwork {
-  id          String        @id @default(cuid())
+  id          String          @id @default(cuid())
   title       String
   caption     String?
   description String?
   price       Int
   imageUrl    String?
-  status      ArtworkStatus @default(DRAFT)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  artist      User          @relation(fields: [artistId], references: [id])
+  status      ArtworkStatus   @default(DRAFT)
+  category    ArtworkCategory @default(UNCATEGORIZED)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  artist      User            @relation(fields: [artistId], references: [id])
   artistId    String
   payment     Payment?
 }

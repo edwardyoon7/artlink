@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { PaymentNotice } from "@/components/payment-notice";
 import { getBankInfo, calcSettlement } from "@/lib/pricing";
 import { GOODS_STAGE_LABELS, GOODS_STAGE_CLASSES } from "@/lib/goods";
+import { ArtworkCategoryEditor } from "@/components/artwork-category-editor";
 
 const ARTWORK_STATUS_LABEL: Record<string, string> = {
   DRAFT: "입금 대기",
@@ -64,7 +65,12 @@ export default async function MyPage() {
     <div className="min-h-screen bg-base text-ink">
       <SiteHeader />
       <section className="mx-auto max-w-3xl px-6 pt-40 pb-20">
-        <h1 className="font-[var(--font-serif-kr)] text-3xl">마이페이지</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="font-[var(--font-serif-kr)] text-3xl">마이페이지</h1>
+          <Link href="/mypage/settings" className="text-sm text-ink/60 underline hover:text-ink">
+            계정 설정
+          </Link>
+        </div>
         {isCollector ? (
           <p className="mt-2 text-sm text-ink/70">{session.user.name}님, 컬렉터로 가입되어 있습니다.</p>
         ) : (
@@ -148,6 +154,7 @@ export default async function MyPage() {
                       {artwork.status === "SOLD" &&
                         ` · 수수료 ${commission.toLocaleString()}원 · 정산액 ${settlement.toLocaleString()}원`}
                     </p>
+                    <ArtworkCategoryEditor artworkId={artwork.id} category={artwork.category} />
                     {artwork.payment && artwork.payment.status !== "CONFIRMED" && (
                       <div className="mt-3">
                         <PaymentNotice

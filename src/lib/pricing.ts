@@ -1,4 +1,4 @@
-export const LISTING_FEE = 50_000; // 위탁판매 등록비 (작품 1점당, 1회)
+export const LISTING_FEE = 3_000; // 위탁판매 등록비 (작품 1점당, 1회)
 export const COACHING_FEE = 100_000; // 코칭 서비스 비용 (세션 1회당)
 export const COMMISSION_RATE = 0.3; // 위탁판매 수수료율 (판매가의 30%)
 

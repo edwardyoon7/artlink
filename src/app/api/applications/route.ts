@@ -16,6 +16,8 @@ export async function POST(request: Request) {
   const phone = formData.get("phone");
   const email = formData.get("email");
   const password = formData.get("password");
+  const passwordHintQuestion = formData.get("passwordHintQuestion");
+  const passwordHintAnswer = formData.get("passwordHintAnswer");
   const education = formData.get("education");
   const career = formData.get("career");
   const exhibitionCountRaw = formData.get("exhibitionCount");
@@ -29,10 +31,12 @@ export async function POST(request: Request) {
     typeof name !== "string" || !name.trim() ||
     typeof phone !== "string" || !phone.trim() ||
     typeof email !== "string" || !email.trim() ||
-    typeof password !== "string" || password.length < 8
+    typeof password !== "string" || password.length < 8 ||
+    typeof passwordHintQuestion !== "string" || !passwordHintQuestion.trim() ||
+    typeof passwordHintAnswer !== "string" || !passwordHintAnswer.trim()
   ) {
     return NextResponse.json(
-      { error: "성함, 전화번호, 이메일, 8자 이상의 비밀번호를 모두 입력해주세요." },
+      { error: "성함, 전화번호, 이메일, 8자 이상의 비밀번호, 비밀번호 힌트 질문·답변을 모두 입력해주세요." },
       { status: 400 },
     );
   }
@@ -68,8 +72,19 @@ export async function POST(request: Request) {
     userId = existingUser.id;
   } else {
     const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHintAnswerHash = await bcrypt.hash(
+      (passwordHintAnswer as string).trim().toLowerCase(),
+      10,
+    );
     const newUser = await prisma.user.create({
-      data: { name, phone, email, passwordHash },
+      data: {
+        name,
+        phone,
+        email,
+        passwordHash,
+        passwordHintQuestion: (passwordHintQuestion as string).trim(),
+        passwordHintAnswerHash,
+      },
     });
     userId = newUser.id;
   }

@@ -30,6 +30,8 @@ export function SignupForm() {
         email: formData.get("email"),
         phone: formData.get("phone"),
         password,
+        passwordHintQuestion: formData.get("passwordHintQuestion"),
+        passwordHintAnswer: formData.get("passwordHintAnswer"),
       }),
     });
 
@@ -94,6 +96,23 @@ export function SignupForm() {
           />
         </label>
       </div>
+      <label className="block text-sm">
+        <span className="text-ink/70">비밀번호 힌트 질문 (비밀번호를 잊었을 때 사용)</span>
+        <input
+          name="passwordHintQuestion"
+          required
+          placeholder="예: 가장 좋아하는 색은?"
+          className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-2 outline-none focus:border-ink"
+        />
+      </label>
+      <label className="block text-sm">
+        <span className="text-ink/70">힌트 답변</span>
+        <input
+          name="passwordHintAnswer"
+          required
+          className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-2 outline-none focus:border-ink"
+        />
+      </label>
       {error && <p className="text-sm text-red-700">{error}</p>}
       <button
         type="submit"

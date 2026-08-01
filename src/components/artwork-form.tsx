@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { ARTWORK_CATEGORY_LABELS, SELECTABLE_ARTWORK_CATEGORIES } from "@/lib/artwork-category";
 
 type Suggestion = { min: number; max: number; basis: string };
 
@@ -68,6 +69,18 @@ export function ArtworkForm({ suggestion }: { suggestion: Suggestion | null }) {
           className="mt-1 block w-full text-sm text-ink/70 file:mr-4 file:rounded-full file:border-0 file:bg-ink/10 file:px-4 file:py-2 file:text-ink"
         />
       </label>
+      <fieldset className="block text-sm">
+        <legend className="text-ink/70">구분</legend>
+        <div className="mt-2 flex flex-wrap gap-4">
+          {SELECTABLE_ARTWORK_CATEGORIES.map((category) => (
+            <label key={category} className="flex items-center gap-1.5 text-sm">
+              <input type="radio" name="category" value={category} required />
+              {ARTWORK_CATEGORY_LABELS[category]}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
       {suggestion ? (
         <div className="rounded-sm border border-terracotta/40 bg-terracotta/5 p-4 text-sm">
           <p className="font-medium text-ink">

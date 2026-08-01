@@ -4,6 +4,8 @@ import path from "path";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { LISTING_FEE } from "@/lib/pricing";
+import { SELECTABLE_ARTWORK_CATEGORIES } from "@/lib/artwork-category";
+import type { ArtworkCategory } from "@/generated/prisma/client";
 
 const IMAGE_ROOT = path.join(process.cwd(), "public", "artworks");
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -24,6 +26,7 @@ export async function POST(request: Request) {
   const caption = formData.get("caption");
   const description = formData.get("description");
   const price = formData.get("price");
+  const category = formData.get("category");
   const image = formData.get("image");
 
   if (typeof title !== "string" || !title.trim()) {
@@ -32,6 +35,12 @@ export async function POST(request: Request) {
   const priceNumber = Number(price);
   if (!Number.isFinite(priceNumber) || priceNumber <= 0) {
     return NextResponse.json({ error: "올바른 가격을 입력해주세요." }, { status: 400 });
+  }
+  if (
+    typeof category !== "string" ||
+    !SELECTABLE_ARTWORK_CATEGORIES.includes(category as ArtworkCategory)
+  ) {
+    return NextResponse.json({ error: "작품 구분을 선택해주세요." }, { status: 400 });
   }
   const imageFile = image instanceof File && image.size > 0 ? image : null;
   if (imageFile) {
@@ -49,6 +58,7 @@ export async function POST(request: Request) {
       caption: typeof caption === "string" && caption.trim() ? caption.trim() : null,
       description: typeof description === "string" ? description : null,
       price: Math.round(priceNumber),
+      category: category as ArtworkCategory,
       artistId: user.id,
       payment: {
         create: {

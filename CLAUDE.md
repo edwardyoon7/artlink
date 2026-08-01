@@ -100,15 +100,18 @@
 
 - **인증**: Auth.js(NextAuth v5) Credentials 로그인, JWT 세션에 `role`(`APPLICANT`/`ADMIN`) 포함
 - **데이터베이스**: SQLite + Prisma ORM (`@prisma/adapter-better-sqlite3` 드라이버 어댑터 필요 — Prisma 7부터 필수)
-  - `User`(이름·전화번호·이메일·비밀번호 해시·role), `Application`(type: PRO/AMATEUR, status: PENDING→RECEIVED→APPROVED/REJECTED), `Document`(첨부 증빙서류)
+  - `User`(이름·전화번호·이메일·비밀번호 해시·비밀번호 힌트 질문/답변 해시·role), `Application`(type: PRO/AMATEUR, status: PENDING→RECEIVED→APPROVED/REJECTED), `Document`(첨부 증빙서류)
 - **파일 업로드**: 증빙서류는 `public/`이 아닌 프로젝트 루트의 `uploads/<applicationId>/`에 비공개로 저장 (URL로 직접 노출되지 않음)
 - **신청 흐름**:
-  1. `/artists/pro`, `/artists/amateur`에서 폼 제출(성함·전화번호·이메일·비밀번호 + 학력/경력 또는 지원동기 + 파일) → 계정 자동 생성 + `Application` 생성(PENDING)
+  1. `/artists/pro`, `/artists/amateur`에서 폼 제출(성함·전화번호·이메일·비밀번호·비밀번호 힌트 질문/답변 + 학력/경력 또는 지원동기 + 파일) → 계정 자동 생성 + `Application` 생성(PENDING)
   2. 신청자는 `/login` 로그인 후 `/mypage`에서 본인 신청 상태 확인
   3. 운영자(role=ADMIN)는 `/admin`에서 전체 신청 목록을 보고 접수/승인/반려 처리 → 신청자 마이페이지에 즉시 반영
 - **라우트 보호**: `src/middleware.ts`가 `/admin/*`은 ADMIN만, `/mypage/*`은 로그인 사용자만 접근하도록 차단
 - **관리자 계정 시드**: `npm run db:seed` (`prisma/seed.ts`) — 기본 계정은 로그인 후 반드시 비밀번호를 변경할 것
-- **비밀번호 재설정**: `npm run reset-password -- <이메일> <새비밀번호>` (`scripts/reset-password.ts`, 화면 UI는 아직 없음)
+- **비밀번호 변경/찾기**:
+  - 로그인 후 `/mypage/settings`에서 비밀번호 변경 및 비밀번호 힌트(질문/답변) 등록·수정 가능 (모든 역할 공용, 이메일 자체는 변경 불가)
+  - 로그인 없이 `/forgot-password`에서 이메일 입력 → 등록된 힌트 질문 확인 → 답변이 일치하면 새 비밀번호 설정 (답변은 `bcrypt` 해시로 저장·비교, 원문 노출 안 됨)
+  - 힌트가 등록되어 있지 않은 계정(가입 시점 이전 계정 등)은 관리자가 `npm run reset-password -- <이메일> <새비밀번호>`(`scripts/reset-password.ts`)로 대신 처리
 - 비개발자용 운영 절차(로그인·신청 심사·비밀번호 변경 등)는 [OPERATIONS.md](./OPERATIONS.md) 참고
 
 ## 승인 후 작가 서비스 (확정)
@@ -116,13 +119,16 @@
 신청이 **승인(APPROVED)**되는 순간 `User.artistLevel`이 `PRO`/`AMATEUR`로 동기화되며(`/api/applications/[id]/status`),
 마이페이지에 아래처럼 서로 다른 메뉴가 나타납니다.
 
-- **프로 작가**: `/mypage/artworks/new`에서 작품 등록 — 제목·소개·**가격(직접 입력)**·**썸네일 이미지(선택)**를
-  함께 등록. 등록 시 위탁판매 등록비(`LISTING_FEE`, `src/lib/pricing.ts`, 기본 50,000원)가 발생하며, 판매 완료 시
-  수수료 30%(`COMMISSION_RATE`)를 뗀 금액이 정산액으로 계산됩니다. 이미지는 `public/artworks/`에 저장되며(비공개
-  증빙서류 `uploads/`와 달리 공개 노출용), 결제가 `CONFIRMED`되어 `LISTED`(또는 `SOLD`) 상태가 되면 홈 화면
-  `#artworks` 섹션에 썸네일·작가명·가격과 함께 실제로 노출됩니다 (`src/app/page.tsx`가 서버에서 직접 조회).
-  홈에는 최신순 9개까지만 미리보기로 보이고, 등록 작품이 9개를 넘으면 **"전체 작품 보기" 링크**가 나타나
-  `/artworks`(페이지당 12개, `?page=` 쿼리 기반 페이지네이션)로 이동합니다. 카드 UI는 `src/components/artwork-card.tsx`로 공용화되어 있습니다.
+- **프로 작가**: `/mypage/artworks/new`에서 작품 등록 — 제목·소개·**구분(동양화/서양화/조각/기타 중 라디오 버튼 선택,
+  필수)**·**가격(직접 입력)**·**썸네일 이미지(선택)**를 함께 등록. 등록 시 위탁판매 등록비(`LISTING_FEE`,
+  `src/lib/pricing.ts`, 기본 3,000원)가 발생하며, 판매 완료 시 수수료 30%(`COMMISSION_RATE`)를 뗀 금액이 정산액으로
+  계산됩니다. 이미지는 `public/artworks/`에 저장되며(비공개 증빙서류 `uploads/`와 달리 공개 노출용), 결제가
+  `CONFIRMED`되어 `LISTED`(또는 `SOLD`) 상태가 되면 홈 화면 `#artworks` 섹션에 썸네일·작가명·가격과 함께 실제로
+  노출됩니다 (`src/app/page.tsx`가 서버에서 직접 조회). 홈에는 최신순 9개까지만 미리보기로 보이고, 등록 작품이
+  9개를 넘으면 **"전체 작품 보기" 링크**가 나타나 `/artworks`(페이지당 12개, `?page=` 쿼리 기반 페이지네이션)로
+  이동합니다. 카드 UI는 `src/components/artwork-card.tsx`로 공용화되어 있습니다. `ArtworkCategory` enum 추가
+  이전에 등록된 작품은 `UNCATEGORIZED`(미분류)로 마이그레이션되며, 작가가 `/mypage`의 "내 작품" 목록에서
+  구분을 직접 수정할 수 있습니다 (`PATCH /api/artworks/[id]/category`, 본인 소유 작품만 가능).
 - **아마추어 작가**: `/mypage/coaching/new`에서 코칭 예약 — ① 시/도 단위 간이 지도(`RegionMap`)에서 방문 가능
   지역 선택 → ② 해당 지역을 담당하는 강사 목록(학력·전시·수상경력 + 가능 요일 기반 다음 4주 날짜)에서 강사·날짜 선택
   (`InstructorPicker`) → ③ 배우고 싶은 내용(자유 텍스트) 입력 후 "신청 접수". 비용은 세션당 `COACHING_FEE`(기본 100,000원)로 동일.
@@ -144,10 +150,13 @@
 작가가 아닌 일반 구매자("컬렉터")를 위한 공개 열람·가입 구조입니다.
 
 - **역할 추가**: `Role`에 `COLLECTOR` 추가 — 작가 신청(승인 절차) 없이 `/signup`(`/api/signup`)에서
-  이름·전화번호·이메일·비밀번호만으로 즉시 가입됩니다 (관리자 승인 불필요, 일반 이커머스 회원가입과 동일).
+  이름·전화번호·이메일·비밀번호·비밀번호 힌트 질문/답변만으로 즉시 가입됩니다 (관리자 승인 불필요, 일반
+  이커머스 회원가입과 동일).
 - **공개 열람**: 홈 화면(`/`)과 전체 작품 목록(`/artworks`)은 **비회원도 열람 가능**합니다. 홈에는
   최신 9건이 자동 전환되는 슬라이드쇼(`ArtworkSlideshow`, 4.5초 간격, 이전/다음·인디케이터 포함)로 노출되고,
-  하단 "전체 작품 보기"로 페이지네이션된 전체 목록(`/artworks`)에 연결됩니다.
+  하단 "전체 작품 보기"로 페이지네이션된 전체 목록(`/artworks`)에 연결됩니다. `/artworks`에는 검색바가 있어
+  작품명·작가명(`q`), 구분(`category`, `src/lib/artwork-category.ts`의 `ArtworkCategory` 기준), 가격 범위
+  (`minPrice`/`maxPrice`)로 필터링할 수 있으며 페이지네이션 이동 시에도 필터가 유지됩니다.
 - **상세 페이지 게이팅**: `/artworks/[id]`는 `LISTED`/`SOLD` 상태만 접근 가능(그 외 404)하며,
   - 비로그인: 가격·설명·구매 방법을 숨기고 회원가입/로그인 유도 문구만 표시
   - 로그인(역할 무관, 컬렉터 포함 누구나): 가격·작품 설명 전체·"구매 문의하기"(mailto 기반, 온라인 결제 아님) 노출
