@@ -36,6 +36,9 @@ yarn-error.log*
 # 계정/비밀번호 등 민감정보 메모 파일
 계정.txt
 
+# 개인정보 원본 자료 보관용 (주소·연락처·개인 작품 등) — Git 추적 제외, 로컬 전용
+/private
+
 # uploads & database (personal applicant data)
 /uploads
 /dev.db

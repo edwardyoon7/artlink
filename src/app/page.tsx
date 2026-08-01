@@ -156,16 +156,12 @@ export default async function Home() {
           작가 등록, 코칭 신청, 작품 문의를 남겨주시면 순서대로 안내드립니다.
         </p>
         <a
-          href="mailto:hello@artlink.example"
+          href="mailto:edwardyoon7@gmail.com"
           className="mt-10 inline-block rounded-full bg-terracotta px-8 py-3 text-sm tracking-wide text-base"
         >
           문의하기
         </a>
       </section>
-
-      <footer className="border-t border-ink/10 py-8 text-center text-xs text-ink/50">
-        © {new Date().getFullYear()} Artlink
-      </footer>
     </div>
   );
 }

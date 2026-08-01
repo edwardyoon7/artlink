@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Serif_KR, Noto_Sans_KR, Cormorant_Garamond } from "next/font/google";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 const notoSerifKr = Noto_Serif_KR({
@@ -35,7 +36,10 @@ export default function RootLayout({
       lang="ko"
       className={`${notoSerifKr.variable} ${notoSansKr.variable} ${cormorant.variable} antialiased`}
     >
-      <body className="font-[var(--font-sans-kr)]">{children}</body>
+      <body className="font-[var(--font-sans-kr)]">
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }

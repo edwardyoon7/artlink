@@ -75,7 +75,7 @@ export default async function ArtworkDetailPage({
                   </p>
                 </div>
                 <a
-                  href={`mailto:hello@artlink.example?subject=${encodeURIComponent(
+                  href={`mailto:edwardyoon7@gmail.com?subject=${encodeURIComponent(
                     `[구매문의] ${artwork.title}`,
                   )}`}
                   className="inline-block rounded-full bg-terracotta px-8 py-3 text-sm tracking-wide text-base"

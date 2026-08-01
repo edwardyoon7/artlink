@@ -75,7 +75,7 @@ export default async function GoodsDetailPublicPage({
                   </p>
                 </div>
                 <a
-                  href={`mailto:hello@artlink.example?subject=${encodeURIComponent(
+                  href={`mailto:edwardyoon7@gmail.com?subject=${encodeURIComponent(
                     `[굿즈 구매문의] ${goods.title}`,
                   )}`}
                   className="inline-block rounded-full bg-terracotta px-8 py-3 text-sm tracking-wide text-base"
