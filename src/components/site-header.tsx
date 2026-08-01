@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@/auth";
 import { SignOutButton } from "@/components/sign-out-button";
+import { MobileNav } from "@/components/mobile-nav";
 
 const nav = [
   { label: "작가", href: "/#artists" },
@@ -16,10 +17,15 @@ export async function SiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-base/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="font-[var(--font-serif-en)] text-xl tracking-[0.2em]">
           ARTLINK
         </Link>
+        <MobileNav
+          nav={nav}
+          isLoggedIn={!!session?.user}
+          isAdmin={session?.user?.role === "ADMIN"}
+        />
         <nav className="hidden items-center gap-8 text-sm md:flex">
           {nav.map((item) => (
             <Link
