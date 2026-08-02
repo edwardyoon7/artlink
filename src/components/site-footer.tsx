@@ -7,7 +7,7 @@ export function SiteFooter() {
             ART·IEUM
           </p>
           <p className="mt-2 text-ink/60">
-            대표 윤진수 (애다아트기획 대표 · AEDA협회 대표)
+            대표 윤진수 (애다기획 대표 · AEDA협회 대표)
           </p>
         </div>
         <div className="space-y-1 text-ink/60">
