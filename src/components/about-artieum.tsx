@@ -16,7 +16,7 @@ export function AboutArtieum() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+        className="text-left tracking-wide text-ink/70 transition-colors hover:text-ink"
       >
         아트이음
       </button>
