@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { ApplicationForm } from "@/components/application-form";
@@ -30,21 +31,35 @@ export default function AmateurArtistPage() {
     <div className="min-h-screen bg-base text-ink">
       <SiteHeader />
 
-      <section className="mx-auto max-w-4xl px-6 pt-40 pb-20">
+      <section className="mx-auto max-w-6xl px-6 pt-40 pb-20">
         <Link href="/#artists" className="text-sm text-ink/50 hover:text-ink">
           ← 작가 소개로 돌아가기
         </Link>
-        <p className="mt-8 font-[var(--font-serif-en)] text-xs tracking-[0.35em] text-terracotta">
-          AMATEUR ARTIST
-        </p>
-        <h1 className="mt-3 font-[var(--font-serif-kr)] text-4xl">
-          아마추어 작가를 위한 Artlink
-        </h1>
-        <p className="mt-6 max-w-2xl text-ink/70">
-          미술 비전공자로서 취미로 창작 활동을 이어가는 분들을 위한 서비스입니다. 프로 작가를
-          위한 판매·전시 중개 서비스와 달리, 커리큘럼과 코칭을 통해 성장 과정을 함께 만들어가는
-          데 집중합니다.
-        </p>
+        <div className="mt-8 grid items-center gap-12 md:grid-cols-2">
+          <div>
+            <p className="font-[var(--font-serif-en)] text-xs tracking-[0.35em] text-terracotta">
+              AMATEUR ARTIST
+            </p>
+            <h1 className="mt-3 font-[var(--font-serif-kr)] text-4xl">
+              아마추어 작가를 위한 Artlink
+            </h1>
+            <p className="mt-6 max-w-2xl text-ink/70">
+              미술 비전공자로서 취미로 창작 활동을 이어가는 분들을 위한 서비스입니다. 프로 작가를
+              위한 판매·전시 중개 서비스와 달리, 커리큘럼과 코칭을 통해 성장 과정을 함께 만들어가는
+              데 집중합니다.
+            </p>
+          </div>
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm border border-terracotta/40">
+            <Image
+              src="/home-images/amateur-artist-2.jpg"
+              alt="아마추어 작가"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority
+            />
+          </div>
+        </div>
       </section>
 
       <section className="border-y border-ink/10 bg-white/40">
