@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SignOutButton } from "@/components/sign-out-button";
+import { AboutArtieum } from "@/components/about-artieum";
 
 type NavItem = { label: string; href: string };
 
@@ -60,23 +61,15 @@ export function MobileNav({
                 <SignOutButton />
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
-                  className="tracking-wide text-ink/70 transition-colors hover:text-ink"
-                >
-                  로그인
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setOpen(false)}
-                  className="tracking-wide text-ink/70 transition-colors hover:text-ink"
-                >
-                  회원가입
-                </Link>
-              </>
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+              >
+                로그인
+              </Link>
             )}
+            <AboutArtieum />
           </nav>
         </div>
       )}

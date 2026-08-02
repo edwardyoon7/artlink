@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { SignOutButton } from "@/components/sign-out-button";
 import { MobileNav } from "@/components/mobile-nav";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { AboutArtieum } from "@/components/about-artieum";
 
 const nav = [
   { label: "작가", href: "/#artists" },
@@ -55,21 +56,14 @@ export async function SiteHeader() {
                 <SignOutButton />
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="tracking-wide text-ink/70 transition-colors hover:text-ink"
-                >
-                  로그인
-                </Link>
-                <Link
-                  href="/signup"
-                  className="tracking-wide text-ink/70 transition-colors hover:text-ink"
-                >
-                  회원가입
-                </Link>
-              </>
+              <Link
+                href="/login"
+                className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+              >
+                로그인
+              </Link>
             )}
+            <AboutArtieum />
           </nav>
         </div>
       </div>
