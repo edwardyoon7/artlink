@@ -12,6 +12,7 @@ const HOME_PREVIEW_COUNT = 9;
 const PRO_ARTIST_IMAGE = "/home-images/pro-artist.jpg";
 const AMATEUR_ARTIST_IMAGE = "/home-images/amateur-artist.jpg";
 const MAIN_HERO_IMAGE = "/home-images/main-hero.png";
+const EDUCATION_IMAGE = "/home-images/education.png";
 
 export default async function Home() {
   const [artworks, artworkCount] = await Promise.all([
@@ -23,12 +24,6 @@ export default async function Home() {
     }),
     prisma.artwork.count({ where: { status: { in: ["LISTED", "SOLD"] } } }),
   ]);
-
-  // 홈 화면 장식용: 새 전문 사진이 준비되기 전까지 이미 등록된 작품 사진을 재활용
-  const withImages = artworks.filter((a) => a.imageUrl);
-  const pickHomeImage = (i: number) =>
-    withImages.length > 0 ? withImages[i % withImages.length] : null;
-  const educationImage = pickHomeImage(0);
 
   const [goodsItems, goodsCount] = await Promise.all([
     prisma.goods.findMany({
@@ -112,7 +107,7 @@ export default async function Home() {
       <section id="education" className="border-y border-ink/10 bg-white/40">
         <div className="mx-auto max-w-6xl px-6 py-32">
           <SectionHeading kr="교육" en="Education" />
-          <div className={`mt-12 grid gap-10 ${educationImage ? "md:grid-cols-[2fr_1fr]" : ""}`}>
+          <div className="mt-12 grid gap-10 md:grid-cols-[2fr_1fr]">
             <div className="grid gap-10 sm:grid-cols-3 md:gap-8">
               <EducationStep
                 step="01"
@@ -130,17 +125,15 @@ export default async function Home() {
                 description="본인의 의지에 따라 전문 교육기관 진학까지 지원합니다."
               />
             </div>
-            {educationImage && (
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm border border-ink/10">
-                <Image
-                  src={educationImage.imageUrl!}
-                  alt=""
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
-            )}
+            <div className="relative aspect-[2/3] w-full overflow-hidden rounded-sm border border-ink/10">
+              <Image
+                src={EDUCATION_IMAGE}
+                alt=""
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
