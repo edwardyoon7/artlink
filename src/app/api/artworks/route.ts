@@ -7,7 +7,7 @@ import { LISTING_FEE } from "@/lib/pricing";
 import { SELECTABLE_ARTWORK_CATEGORIES } from "@/lib/artwork-category";
 import type { ArtworkCategory } from "@/generated/prisma/client";
 
-const IMAGE_ROOT = path.join(process.cwd(), "public", "artworks");
+const IMAGE_ROOT = path.join(process.cwd(), "public", "artwork-uploads");
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function POST(request: Request) {
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
     finalArtwork = await prisma.artwork.update({
       where: { id: artwork.id },
-      data: { imageUrl: `/artworks/${fileName}` },
+      data: { imageUrl: `/artwork-uploads/${fileName}` },
       include: { payment: true },
     });
   }

@@ -4,7 +4,7 @@ import path from "path";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-const IMAGE_ROOT = path.join(process.cwd(), "public", "goods");
+const IMAGE_ROOT = path.join(process.cwd(), "public", "goods-uploads");
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -55,7 +55,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const fileName = `${goods.id}-${safeName}`;
     const buffer = Buffer.from(await imageFile.arrayBuffer());
     await writeFile(path.join(IMAGE_ROOT, fileName), buffer);
-    imageUrl = `/goods/${fileName}`;
+    imageUrl = `/goods-uploads/${fileName}`;
   }
 
   const updated = await prisma.goods.update({
