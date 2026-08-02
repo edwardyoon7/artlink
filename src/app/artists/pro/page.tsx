@@ -22,7 +22,7 @@ const services = [
   {
     title: "컬렉터 매칭 및 딜 중개",
     description:
-      "작품에 관심을 보인 컬렉터와의 커뮤니케이션·계약·배송까지 Artlink가 중간에서 조율합니다.",
+      "작품에 관심을 보인 컬렉터와의 커뮤니케이션·계약·배송까지 Artieum가 중간에서 조율합니다.",
   },
 ];
 
@@ -41,7 +41,7 @@ export default function ProArtistPage() {
               PRO ARTIST
             </p>
             <h1 className="mt-3 font-[var(--font-serif-kr)] text-4xl">
-              프로 작가를 위한 Artlink
+              프로 작가를 위한 Artieum
             </h1>
             <p className="mt-6 max-w-2xl text-ink/70">
               미술을 전공하고 전업으로 활동 중인 작가를 위한 서비스입니다. 아마추어 작가를 위한

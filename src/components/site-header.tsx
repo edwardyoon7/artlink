@@ -18,8 +18,13 @@ export async function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-base/90 backdrop-blur">
       <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="font-[var(--font-serif-en)] text-xl tracking-[0.2em]">
-          ARTLINK
+        <Link href="/" className="flex items-baseline gap-2">
+          <span className="font-[var(--font-serif-en)] text-xl tracking-[0.2em]">
+            ART·IEUM
+          </span>
+          <span className="font-[var(--font-sans-kr)] text-xs tracking-wide text-terracotta">
+            아트이음
+          </span>
         </Link>
         <MobileNav
           nav={nav}

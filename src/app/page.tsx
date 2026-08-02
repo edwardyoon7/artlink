@@ -47,7 +47,7 @@ export default async function Home() {
               ARTIST · EDUCATION · ARTWORK
             </p>
             <h1 className="mt-6 font-[var(--font-serif-kr)] text-4xl leading-snug md:text-6xl">
-              작가와 컬렉터를 잇다, Artlink
+              작가와 컬렉터를 잇다, Artieum
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-lg text-ink/70 md:mx-0">
               당신의 취미가, 작품이 되고, 작가가 됩니다.
@@ -70,7 +70,7 @@ export default async function Home() {
           <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-sm border border-ink/20 md:max-w-none">
             <Image
               src={MAIN_HERO_IMAGE}
-              alt="Artlink"
+              alt="Artieum"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover"
@@ -166,7 +166,7 @@ export default async function Home() {
         <div className="mx-auto max-w-6xl px-6 py-32">
           <SectionHeading kr="굿즈" en="Goods" />
           <p className="mt-6 max-w-2xl text-ink/70">
-            작가의 아이디어를 실물 굿즈로 완성해가는 과정입니다. Artlink가 아이디어 컨설팅·제작
+            작가의 아이디어를 실물 굿즈로 완성해가는 과정입니다. Artieum가 아이디어 컨설팅·제작
             의뢰·샘플 검토를 함께합니다.
           </p>
           {goodsItems.length === 0 ? (

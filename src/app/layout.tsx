@@ -22,8 +22,8 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Artlink — 작가와 컬렉터를 잇다",
-  description: "작가·미술교육·작품을 잇는 아트 에이전시 Artlink",
+  title: "ART·IEUM — 작가와 컬렉터를 잇다",
+  description: "작가·미술교육·작품을 잇는 아트 에이전시 Artieum",
 };
 
 export default function RootLayout({

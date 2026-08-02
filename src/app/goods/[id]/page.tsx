@@ -70,7 +70,7 @@ export default async function GoodsDetailPublicPage({
                 <div className="rounded-sm border border-ink/20 p-4 text-sm text-ink/70">
                   <p className="font-medium text-ink">구입 방법</p>
                   <p className="mt-1">
-                    Artlink가 작가와 컬렉터 사이에서 거래를 중개합니다. 아래 문의하기를 통해
+                    Artieum가 작가와 컬렉터 사이에서 거래를 중개합니다. 아래 문의하기를 통해
                     구매를 요청하시면 운영자가 확인 후 안내드립니다.
                   </p>
                 </div>

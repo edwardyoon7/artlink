@@ -17,7 +17,7 @@ const services = [
   {
     title: "첫 작품 판매 지원",
     description:
-      "완성한 작품을 Artlink에 등록해 소규모로 판매를 시작할 수 있도록 돕습니다.",
+      "완성한 작품을 Artieum에 등록해 소규모로 판매를 시작할 수 있도록 돕습니다.",
   },
   {
     title: "전문 교육기관 진학 컨설팅",
@@ -41,7 +41,7 @@ export default function AmateurArtistPage() {
               AMATEUR ARTIST
             </p>
             <h1 className="mt-3 font-[var(--font-serif-kr)] text-4xl">
-              아마추어 작가를 위한 Artlink
+              아마추어 작가를 위한 Artieum
             </h1>
             <p className="mt-6 max-w-2xl text-ink/70">
               미술 비전공자로서 취미로 창작 활동을 이어가는 분들을 위한 서비스입니다. 프로 작가를

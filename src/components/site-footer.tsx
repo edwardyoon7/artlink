@@ -4,7 +4,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 text-center md:flex-row md:items-start md:justify-between md:text-left">
         <div>
           <p className="font-[var(--font-serif-en)] text-xs tracking-[0.35em] text-terracotta">
-            ARTLINK
+            ART·IEUM
           </p>
           <p className="mt-2 text-ink/60">
             대표 윤진수 (애다아트기획 대표 · AEDA협회 대표)
@@ -16,7 +16,7 @@ export function SiteFooter() {
         </div>
       </div>
       <p className="mx-auto mt-8 max-w-6xl text-center text-xs text-ink/40">
-        © {new Date().getFullYear()} Artlink
+        © {new Date().getFullYear()} Artieum
       </p>
     </footer>
   );
