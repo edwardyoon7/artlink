@@ -51,7 +51,7 @@ export default function ProArtistPage() {
           </div>
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm border border-ink/20">
             <Image
-              src="/home-images/pro-artist-2.jpg"
+              src="/home-images/pro-artist-2.png"
               alt="프로 작가"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"

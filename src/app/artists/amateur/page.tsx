@@ -51,7 +51,7 @@ export default function AmateurArtistPage() {
           </div>
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm border border-terracotta/40">
             <Image
-              src="/home-images/amateur-artist-2.jpg"
+              src="/home-images/amateur-artist-2.png"
               alt="아마추어 작가"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
