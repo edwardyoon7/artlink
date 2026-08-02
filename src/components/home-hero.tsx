@@ -12,12 +12,12 @@ export function HomeHero() {
 
   return (
     <section className="flex min-h-screen items-center px-6 py-32">
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-16 md:grid-cols-2">
-        <div
-          className={`text-center md:text-left ${
-            themed ? "rounded-2xl bg-ink/45 p-8 backdrop-blur-sm md:p-10" : ""
-          }`}
-        >
+      <div
+        className={`mx-auto grid w-full max-w-6xl items-center gap-16 md:grid-cols-2 ${
+          themed ? "rounded-2xl bg-ink/45 p-8 backdrop-blur-sm md:p-12" : ""
+        }`}
+      >
+        <div className="text-center md:text-left">
           <p
             className={`font-[var(--font-serif-en)] text-sm tracking-[0.35em] ${
               themed ? "text-white/80" : "text-terracotta"
@@ -30,7 +30,9 @@ export function HomeHero() {
               themed ? "text-white" : "text-ink"
             }`}
           >
-            작가와 컬렉터를 잇다, Artieum
+            작가와 컬렉터를
+            <br />
+            잇다, Artieum
           </h1>
           <p
             className={`mx-auto mt-6 max-w-xl text-lg md:mx-0 ${
