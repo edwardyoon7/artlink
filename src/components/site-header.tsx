@@ -2,6 +2,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { SignOutButton } from "@/components/sign-out-button";
 import { MobileNav } from "@/components/mobile-nav";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 const nav = [
   { label: "작가", href: "/#artists" },
@@ -26,48 +27,51 @@ export async function SiteHeader() {
             아트이음
           </span>
         </Link>
-        <MobileNav
-          nav={nav}
-          isLoggedIn={!!session?.user}
-          isAdmin={session?.user?.role === "ADMIN"}
-        />
-        <nav className="hidden items-center gap-8 text-sm md:flex">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="tracking-wide text-ink/70 transition-colors hover:text-ink"
-            >
-              {item.label}
-            </Link>
-          ))}
-          {session?.user ? (
-            <>
+        <div className="flex items-center gap-3">
+          <ThemeSwitcher />
+          <MobileNav
+            nav={nav}
+            isLoggedIn={!!session?.user}
+            isAdmin={session?.user?.role === "ADMIN"}
+          />
+          <nav className="hidden items-center gap-8 text-sm md:flex">
+            {nav.map((item) => (
               <Link
-                href={session.user.role === "ADMIN" ? "/admin" : "/mypage"}
+                key={item.href}
+                href={item.href}
                 className="tracking-wide text-ink/70 transition-colors hover:text-ink"
               >
-                {session.user.role === "ADMIN" ? "관리자" : "마이페이지"}
+                {item.label}
               </Link>
-              <SignOutButton />
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="tracking-wide text-ink/70 transition-colors hover:text-ink"
-              >
-                로그인
-              </Link>
-              <Link
-                href="/signup"
-                className="tracking-wide text-ink/70 transition-colors hover:text-ink"
-              >
-                회원가입
-              </Link>
-            </>
-          )}
-        </nav>
+            ))}
+            {session?.user ? (
+              <>
+                <Link
+                  href={session.user.role === "ADMIN" ? "/admin" : "/mypage"}
+                  className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+                >
+                  {session.user.role === "ADMIN" ? "관리자" : "마이페이지"}
+                </Link>
+                <SignOutButton />
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+                >
+                  로그인
+                </Link>
+                <Link
+                  href="/signup"
+                  className="tracking-wide text-ink/70 transition-colors hover:text-ink"
+                >
+                  회원가입
+                </Link>
+              </>
+            )}
+          </nav>
+        </div>
       </div>
     </header>
   );

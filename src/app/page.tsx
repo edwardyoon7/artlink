@@ -3,6 +3,8 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { ArtworkSlideshow } from "@/components/artwork-slideshow";
 import { GoodsSlideshow } from "@/components/goods-slideshow";
+import { ThemeBackground } from "@/components/theme-background";
+import { HomeHero } from "@/components/home-hero";
 import { prisma } from "@/lib/prisma";
 
 const HOME_PREVIEW_COUNT = 9;
@@ -11,7 +13,6 @@ const HOME_PREVIEW_COUNT = 9;
 // 아마추어가 그렸다"는 오해를 줄 수 있어 별도로 준비한 대표 이미지를 고정으로 사용
 const PRO_ARTIST_IMAGE = "/home-images/pro-artist.jpg";
 const AMATEUR_ARTIST_IMAGE = "/home-images/amateur-artist.jpg";
-const MAIN_HERO_IMAGE = "/home-images/main-hero.png";
 const EDUCATION_IMAGE = "/home-images/education.png";
 
 export default async function Home() {
@@ -36,75 +37,40 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="min-h-screen bg-base text-ink">
+    <div className="relative min-h-screen text-ink">
+      <ThemeBackground />
       <SiteHeader />
 
-      {/* 히어로: 작가·교육·작품을 잇는다는 메시지 */}
-      <section className="flex min-h-screen items-center px-6 py-32">
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-16 md:grid-cols-2">
-          <div className="text-center md:text-left">
-            <p className="font-[var(--font-serif-en)] text-sm tracking-[0.35em] text-terracotta">
-              ARTIST · EDUCATION · ARTWORK
-            </p>
-            <h1 className="mt-6 font-[var(--font-serif-kr)] text-4xl leading-snug md:text-6xl">
-              작가와 컬렉터를 잇다, Artieum
-            </h1>
-            <p className="mx-auto mt-6 max-w-xl text-lg text-ink/70 md:mx-0">
-              당신의 취미가, 작품이 되고, 작가가 됩니다.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4 md:justify-start">
-              <Link
-                href="/artworks"
-                className="rounded-full bg-ink px-8 py-3 text-sm tracking-wide text-base"
-              >
-                작품 둘러보기
-              </Link>
-              <Link
-                href="#artists"
-                className="rounded-full border-2 border-terracotta px-8 py-3 text-sm tracking-wide text-terracotta"
-              >
-                작가로 등록하기
-              </Link>
-            </div>
-          </div>
-          <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-sm border border-ink/20 md:max-w-none">
-            <Image
-              src={MAIN_HERO_IMAGE}
-              alt="Artieum"
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
-              priority
+      {/* 히어로: 작가·교육·작품을 잇는다는 메시지 (배경 테마에 따라 텍스트 색이 전환됨) */}
+      <HomeHero />
+
+      {/* 작가: 프로/아마추어 두 축을 색으로 구분 */}
+      <section id="artists" className="border-y border-ink/10 bg-base">
+        <div className="mx-auto max-w-6xl px-6 py-32">
+          <SectionHeading kr="작가" en="Artists" />
+          <div className="mt-12 grid gap-8 md:grid-cols-2">
+            <ArtistCard
+              href="/artists/pro"
+              accent="ink"
+              badge="PRO"
+              title="프로 작가"
+              description="미술을 전공하고 전업으로 창작 활동을 이어가는 작가입니다. 이력과 전시 경력을 중심으로 신뢰도를 보여줍니다."
+              imageUrl={PRO_ARTIST_IMAGE}
+            />
+            <ArtistCard
+              href="/artists/amateur"
+              accent="terracotta"
+              badge="AMATEUR"
+              title="아마추어 작가"
+              description="미술을 전공하지 않았지만 취미로 창작을 이어가는 작가입니다. 커리큘럼 참여 전후의 성장 서사를 보여줍니다."
+              imageUrl={AMATEUR_ARTIST_IMAGE}
             />
           </div>
         </div>
       </section>
 
-      {/* 작가: 프로/아마추어 두 축을 색으로 구분 */}
-      <section id="artists" className="mx-auto max-w-6xl px-6 py-32">
-        <SectionHeading kr="작가" en="Artists" />
-        <div className="mt-12 grid gap-8 md:grid-cols-2">
-          <ArtistCard
-            href="/artists/pro"
-            accent="ink"
-            badge="PRO"
-            title="프로 작가"
-            description="미술을 전공하고 전업으로 창작 활동을 이어가는 작가입니다. 이력과 전시 경력을 중심으로 신뢰도를 보여줍니다."
-            imageUrl={PRO_ARTIST_IMAGE}
-          />
-          <ArtistCard
-            href="/artists/amateur"
-            accent="terracotta"
-            badge="AMATEUR"
-            title="아마추어 작가"
-            description="미술을 전공하지 않았지만 취미로 창작을 이어가는 작가입니다. 커리큘럼 참여 전후의 성장 서사를 보여줍니다."
-            imageUrl={AMATEUR_ARTIST_IMAGE}
-          />
-        </div>
-      </section>
-
       {/* 교육: 사설기관 커리큘럼 → 전문기관 진학 지원 */}
-      <section id="education" className="border-y border-ink/10 bg-white/40">
+      <section id="education" className="border-y border-ink/10 bg-base">
         <div className="mx-auto max-w-6xl px-6 py-32">
           <SectionHeading kr="교육" en="Education" />
           <div className="mt-12 grid gap-10 md:grid-cols-[2fr_1fr]">
@@ -139,30 +105,32 @@ export default async function Home() {
       </section>
 
       {/* 작품: 가격 + 작가 스토리를 함께 노출 */}
-      <section id="artworks" className="mx-auto max-w-6xl px-6 py-32">
-        <SectionHeading kr="작품" en="Artworks" />
-        <p className="mt-6 max-w-2xl text-ink/70">
-          작품 사진과 가격뿐 아니라, 그 작품을 만든 작가의 이야기를 함께 소개합니다.
-        </p>
-        {artworks.length === 0 ? (
-          <p className="mt-12 text-sm text-ink/50">아직 등록된 작품이 없습니다.</p>
-        ) : (
-          <div className="mt-12">
-            <ArtworkSlideshow artworks={artworks} />
-            <div className="mt-10 text-center">
-              <Link
-                href="/artworks"
-                className="inline-flex items-center gap-2 text-sm font-medium text-ink hover:underline"
-              >
-                전체 작품 보기 ({artworkCount}) →
-              </Link>
+      <section id="artworks" className="border-y border-ink/10 bg-base">
+        <div className="mx-auto max-w-6xl px-6 py-32">
+          <SectionHeading kr="작품" en="Artworks" />
+          <p className="mt-6 max-w-2xl text-ink/70">
+            작품 사진과 가격뿐 아니라, 그 작품을 만든 작가의 이야기를 함께 소개합니다.
+          </p>
+          {artworks.length === 0 ? (
+            <p className="mt-12 text-sm text-ink/50">아직 등록된 작품이 없습니다.</p>
+          ) : (
+            <div className="mt-12">
+              <ArtworkSlideshow artworks={artworks} />
+              <div className="mt-10 text-center">
+                <Link
+                  href="/artworks"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-ink hover:underline"
+                >
+                  전체 작품 보기 ({artworkCount}) →
+                </Link>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </section>
 
       {/* 굿즈: 작가의 아이디어를 실물 상품으로, 외주 제작·샘플 검토를 Artlink가 함께 */}
-      <section id="goods" className="border-y border-ink/10 bg-white/40">
+      <section id="goods" className="border-y border-ink/10 bg-base">
         <div className="mx-auto max-w-6xl px-6 py-32">
           <SectionHeading kr="굿즈" en="Goods" />
           <p className="mt-6 max-w-2xl text-ink/70">
@@ -199,17 +167,19 @@ export default async function Home() {
       </section>
 
       {/* 문의/신청 CTA */}
-      <section id="contact" className="mx-auto max-w-6xl px-6 py-32 text-center">
-        <SectionHeading kr="문의" en="Contact" />
-        <p className="mx-auto mt-6 max-w-xl text-ink/70">
-          작가 등록, 코칭 신청, 작품 문의를 남겨주시면 순서대로 안내드립니다.
-        </p>
-        <a
-          href="mailto:edwardyoon7@gmail.com"
-          className="mt-10 inline-block rounded-full bg-terracotta px-8 py-3 text-sm tracking-wide text-base"
-        >
-          문의하기
-        </a>
+      <section id="contact" className="border-y border-ink/10 bg-base">
+        <div className="mx-auto max-w-6xl px-6 py-32 text-center">
+          <SectionHeading kr="문의" en="Contact" />
+          <p className="mx-auto mt-6 max-w-xl text-ink/70">
+            작가 등록, 코칭 신청, 작품 문의를 남겨주시면 순서대로 안내드립니다.
+          </p>
+          <a
+            href="mailto:edwardyoon7@gmail.com"
+            className="mt-10 inline-block rounded-full bg-terracotta px-8 py-3 text-sm tracking-wide text-base"
+          >
+            문의하기
+          </a>
+        </div>
       </section>
     </div>
   );
