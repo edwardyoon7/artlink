@@ -7,6 +7,11 @@ import { prisma } from "@/lib/prisma";
 
 const HOME_PREVIEW_COUNT = 9;
 
+// 프로/아마추어 작가 카드용 이미지: 실제 작품 사진을 쓰면 "이 그림은 프로가, 저 그림은
+// 아마추어가 그렸다"는 오해를 줄 수 있어 별도로 준비한 대표 이미지를 고정으로 사용
+const PRO_ARTIST_IMAGE = "/home-images/pro-artist.jpg";
+const AMATEUR_ARTIST_IMAGE = "/home-images/amateur-artist.jpg";
+
 export default async function Home() {
   const [artworks, artworkCount] = await Promise.all([
     prisma.artwork.findMany({
@@ -23,9 +28,7 @@ export default async function Home() {
   const pickHomeImage = (i: number) =>
     withImages.length > 0 ? withImages[i % withImages.length] : null;
   const heroImage = pickHomeImage(0);
-  const proImage = pickHomeImage(1);
-  const amateurImage = pickHomeImage(2);
-  const educationImage = pickHomeImage(3);
+  const educationImage = pickHomeImage(1);
 
   const [goodsItems, goodsCount] = await Promise.all([
     prisma.goods.findMany({
@@ -98,7 +101,7 @@ export default async function Home() {
             badge="PRO"
             title="프로 작가"
             description="미술을 전공하고 전업으로 창작 활동을 이어가는 작가입니다. 이력과 전시 경력을 중심으로 신뢰도를 보여줍니다."
-            imageUrl={proImage?.imageUrl ?? null}
+            imageUrl={PRO_ARTIST_IMAGE}
           />
           <ArtistCard
             href="/artists/amateur"
@@ -106,7 +109,7 @@ export default async function Home() {
             badge="AMATEUR"
             title="아마추어 작가"
             description="미술을 전공하지 않았지만 취미로 창작을 이어가는 작가입니다. 커리큘럼 참여 전후의 성장 서사를 보여줍니다."
-            imageUrl={amateurImage?.imageUrl ?? null}
+            imageUrl={AMATEUR_ARTIST_IMAGE}
           />
         </div>
       </section>
