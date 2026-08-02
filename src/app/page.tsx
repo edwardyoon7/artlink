@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { ArtworkSlideshow } from "@/components/artwork-slideshow";
@@ -17,6 +18,15 @@ export default async function Home() {
     prisma.artwork.count({ where: { status: { in: ["LISTED", "SOLD"] } } }),
   ]);
 
+  // 홈 화면 장식용: 새 전문 사진이 준비되기 전까지 이미 등록된 작품 사진을 재활용
+  const withImages = artworks.filter((a) => a.imageUrl);
+  const pickHomeImage = (i: number) =>
+    withImages.length > 0 ? withImages[i % withImages.length] : null;
+  const heroImage = pickHomeImage(0);
+  const proImage = pickHomeImage(1);
+  const amateurImage = pickHomeImage(2);
+  const educationImage = pickHomeImage(3);
+
   const [goodsItems, goodsCount] = await Promise.all([
     prisma.goods.findMany({
       where: { stage: { in: ["LISTED", "SOLD_OUT"] } },
@@ -32,16 +42,50 @@ export default async function Home() {
       <SiteHeader />
 
       {/* 히어로: 작가·교육·작품을 잇는다는 메시지 */}
-      <section className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <p className="font-[var(--font-serif-en)] text-sm tracking-[0.35em] text-terracotta">
-          ARTIST · EDUCATION · ARTWORK
-        </p>
-        <h1 className="mt-6 font-[var(--font-serif-kr)] text-4xl leading-snug md:text-6xl">
-          작가와 컬렉터를 잇다, Artlink
-        </h1>
-        <p className="mt-6 max-w-xl text-lg text-ink/70">
-          당신의 취미가, 작품이 되고, 작가가 됩니다.
-        </p>
+      <section className="flex min-h-screen items-center px-6 py-32">
+        <div
+          className={`mx-auto grid w-full max-w-6xl items-center gap-16 ${
+            heroImage ? "md:grid-cols-2" : ""
+          }`}
+        >
+          <div className="text-center md:text-left">
+            <p className="font-[var(--font-serif-en)] text-sm tracking-[0.35em] text-terracotta">
+              ARTIST · EDUCATION · ARTWORK
+            </p>
+            <h1 className="mt-6 font-[var(--font-serif-kr)] text-4xl leading-snug md:text-6xl">
+              작가와 컬렉터를 잇다, Artlink
+            </h1>
+            <p className="mx-auto mt-6 max-w-xl text-lg text-ink/70 md:mx-0">
+              당신의 취미가, 작품이 되고, 작가가 됩니다.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4 md:justify-start">
+              <Link
+                href="/artworks"
+                className="rounded-full bg-ink px-8 py-3 text-sm tracking-wide text-base"
+              >
+                작품 둘러보기
+              </Link>
+              <Link
+                href="#artists"
+                className="rounded-full border-2 border-terracotta px-8 py-3 text-sm tracking-wide text-terracotta"
+              >
+                작가로 등록하기
+              </Link>
+            </div>
+          </div>
+          {heroImage && (
+            <div className="relative mx-auto aspect-[3/4] w-full max-w-sm overflow-hidden rounded-sm border border-ink/20 md:max-w-none">
+              <Image
+                src={heroImage.imageUrl!}
+                alt={heroImage.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
+        </div>
       </section>
 
       {/* 작가: 프로/아마추어 두 축을 색으로 구분 */}
@@ -54,6 +98,7 @@ export default async function Home() {
             badge="PRO"
             title="프로 작가"
             description="미술을 전공하고 전업으로 창작 활동을 이어가는 작가입니다. 이력과 전시 경력을 중심으로 신뢰도를 보여줍니다."
+            imageUrl={proImage?.imageUrl ?? null}
           />
           <ArtistCard
             href="/artists/amateur"
@@ -61,6 +106,7 @@ export default async function Home() {
             badge="AMATEUR"
             title="아마추어 작가"
             description="미술을 전공하지 않았지만 취미로 창작을 이어가는 작가입니다. 커리큘럼 참여 전후의 성장 서사를 보여줍니다."
+            imageUrl={amateurImage?.imageUrl ?? null}
           />
         </div>
       </section>
@@ -69,22 +115,35 @@ export default async function Home() {
       <section id="education" className="border-y border-ink/10 bg-white/40">
         <div className="mx-auto max-w-6xl px-6 py-32">
           <SectionHeading kr="교육" en="Education" />
-          <div className="mt-12 grid gap-10 md:grid-cols-3">
-            <EducationStep
-              step="01"
-              title="맞춤 커리큘럼"
-              description="비전공·취미 활동자를 위한 다양한 커리큘럼으로 시작합니다."
-            />
-            <EducationStep
-              step="02"
-              title="1:1 코칭"
-              description="작가로 성장할 수 있도록 개인 맞춤 코칭을 제공합니다."
-            />
-            <EducationStep
-              step="03"
-              title="전문기관 진학 지원"
-              description="본인의 의지에 따라 전문 교육기관 진학까지 지원합니다."
-            />
+          <div className={`mt-12 grid gap-10 ${educationImage ? "md:grid-cols-[2fr_1fr]" : ""}`}>
+            <div className="grid gap-10 sm:grid-cols-3 md:gap-8">
+              <EducationStep
+                step="01"
+                title="맞춤 커리큘럼"
+                description="비전공·취미 활동자를 위한 다양한 커리큘럼으로 시작합니다."
+              />
+              <EducationStep
+                step="02"
+                title="1:1 코칭"
+                description="작가로 성장할 수 있도록 개인 맞춤 코칭을 제공합니다."
+              />
+              <EducationStep
+                step="03"
+                title="전문기관 진학 지원"
+                description="본인의 의지에 따라 전문 교육기관 진학까지 지원합니다."
+              />
+            </div>
+            {educationImage && (
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm border border-ink/10">
+                <Image
+                  src={educationImage.imageUrl!}
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover"
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -195,26 +254,43 @@ function ArtistCard({
   badge,
   title,
   description,
+  imageUrl,
 }: {
   href: string;
   accent: "ink" | "terracotta";
   badge: string;
   title: string;
   description: string;
+  imageUrl?: string | null;
 }) {
   const accentClass = accent === "ink" ? "border-ink text-ink" : "border-terracotta text-terracotta";
+  const overlayClass = accent === "ink" ? "bg-ink/35" : "bg-terracotta/25";
   return (
     <Link
       href={href}
-      className={`group block rounded-sm border-2 p-8 transition-all hover:-translate-y-1 hover:shadow-lg ${accentClass}`}
+      className={`group block overflow-hidden rounded-sm border-2 transition-all hover:-translate-y-1 hover:shadow-lg ${accentClass}`}
     >
-      <span className="font-[var(--font-serif-en)] text-xs tracking-[0.3em]">{badge}</span>
-      <h3 className="mt-4 font-[var(--font-serif-kr)] text-2xl text-ink">{title}</h3>
-      <p className="mt-4 text-sm text-ink/70">{description}</p>
-      <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-ink">
-        자세히 보기
-        <span className="transition-transform group-hover:translate-x-1">→</span>
-      </span>
+      {imageUrl && (
+        <div className="relative aspect-[16/9] w-full overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover transition-transform group-hover:scale-105"
+          />
+          <div className={`absolute inset-0 ${overlayClass}`} />
+        </div>
+      )}
+      <div className="p-8">
+        <span className="font-[var(--font-serif-en)] text-xs tracking-[0.3em]">{badge}</span>
+        <h3 className="mt-4 font-[var(--font-serif-kr)] text-2xl text-ink">{title}</h3>
+        <p className="mt-4 text-sm text-ink/70">{description}</p>
+        <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-ink">
+          자세히 보기
+          <span className="transition-transform group-hover:translate-x-1">→</span>
+        </span>
+      </div>
     </Link>
   );
 }
