@@ -8,7 +8,7 @@ import { SELECTABLE_ARTWORK_CATEGORIES } from "@/lib/artwork-category";
 import type { ArtworkCategory } from "@/generated/prisma/client";
 
 const IMAGE_ROOT = path.join(process.cwd(), "public", "artwork-uploads");
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50MB
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "이미지 파일만 업로드할 수 있습니다." }, { status: 400 });
     }
     if (imageFile.size > MAX_IMAGE_SIZE) {
-      return NextResponse.json({ error: "이미지 크기는 10MB를 넘을 수 없습니다." }, { status: 400 });
+      return NextResponse.json({ error: "이미지 크기는 50MB를 넘을 수 없습니다." }, { status: 400 });
     }
   }
 
