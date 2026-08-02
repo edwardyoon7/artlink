@@ -11,6 +11,7 @@ const HOME_PREVIEW_COUNT = 9;
 // 아마추어가 그렸다"는 오해를 줄 수 있어 별도로 준비한 대표 이미지를 고정으로 사용
 const PRO_ARTIST_IMAGE = "/home-images/pro-artist.jpg";
 const AMATEUR_ARTIST_IMAGE = "/home-images/amateur-artist.jpg";
+const MAIN_HERO_IMAGE = "/home-images/main-hero.png";
 
 export default async function Home() {
   const [artworks, artworkCount] = await Promise.all([
@@ -27,8 +28,7 @@ export default async function Home() {
   const withImages = artworks.filter((a) => a.imageUrl);
   const pickHomeImage = (i: number) =>
     withImages.length > 0 ? withImages[i % withImages.length] : null;
-  const heroImage = pickHomeImage(0);
-  const educationImage = pickHomeImage(1);
+  const educationImage = pickHomeImage(0);
 
   const [goodsItems, goodsCount] = await Promise.all([
     prisma.goods.findMany({
@@ -46,11 +46,7 @@ export default async function Home() {
 
       {/* 히어로: 작가·교육·작품을 잇는다는 메시지 */}
       <section className="flex min-h-screen items-center px-6 py-32">
-        <div
-          className={`mx-auto grid w-full max-w-6xl items-center gap-16 ${
-            heroImage ? "md:grid-cols-2" : ""
-          }`}
-        >
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-16 md:grid-cols-2">
           <div className="text-center md:text-left">
             <p className="font-[var(--font-serif-en)] text-sm tracking-[0.35em] text-terracotta">
               ARTIST · EDUCATION · ARTWORK
@@ -76,18 +72,16 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-          {heroImage && (
-            <div className="relative mx-auto aspect-[3/4] w-full max-w-sm overflow-hidden rounded-sm border border-ink/20 md:max-w-none">
-              <Image
-                src={heroImage.imageUrl!}
-                alt={heroImage.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            </div>
-          )}
+          <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-sm border border-ink/20 md:max-w-none">
+            <Image
+              src={MAIN_HERO_IMAGE}
+              alt="Artlink"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority
+            />
+          </div>
         </div>
       </section>
 
