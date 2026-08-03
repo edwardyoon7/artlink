@@ -11,6 +11,9 @@ import {
   TextRun,
   WidthType,
   HeadingLevel,
+  TableLayoutType,
+  PageOrientation,
+  convertInchesToTwip,
 } from "docx";
 import type { SoldArtworkRow } from "@/lib/artwork-export";
 
@@ -68,17 +71,26 @@ export async function buildWord(
   includeBuyer: boolean,
 ): Promise<Buffer> {
   const columns = columnsFor(includeBuyer);
-  const totalWidth = columns.reduce((sum, c) => sum + c.width, 0);
-  const cellWidth = (w: number) => ({
-    size: Math.round((w / totalWidth) * 100),
-    type: WidthType.PERCENTAGE,
-  });
+  // DXA(twip, 1/20pt) 절대 단위로 지정 — 퍼센트 단위는 이 라이브러리/워드 조합에서
+  // 표가 극단적으로 좁게 찌그러지는 문제가 있었음. layout을 FIXED로 강제해
+  // 워드가 내용 기준으로 임의로 열 너비를 재계산하지 못하게 함.
+  const dxa = (pt: number) => pt * 20;
+  const columnWidthsDxa = columns.map((c) => dxa(c.width));
+  const tableWidthDxa = columnWidthsDxa.reduce((sum, w) => sum + w, 0);
+
+  const cellMargins = {
+    top: 60,
+    bottom: 60,
+    left: 80,
+    right: 80,
+  };
 
   const headerRow = new TableRow({
     children: columns.map(
-      (c) =>
+      (c, i) =>
         new TableCell({
-          width: cellWidth(c.width),
+          width: { size: columnWidthsDxa[i], type: WidthType.DXA },
+          margins: cellMargins,
           children: [
             new Paragraph({ children: [new TextRun({ text: c.label, bold: true })] }),
           ],
@@ -90,9 +102,10 @@ export async function buildWord(
     (row) =>
       new TableRow({
         children: columns.map(
-          (c) =>
+          (c, i) =>
             new TableCell({
-              width: cellWidth(c.width),
+              width: { size: columnWidthsDxa[i], type: WidthType.DXA },
+              margins: cellMargins,
               children: [new Paragraph(String(row[c.key] ?? ""))],
             }),
         ),
@@ -102,6 +115,19 @@ export async function buildWord(
   const doc = new Document({
     sections: [
       {
+        properties: {
+          page: {
+            size: {
+              orientation: PageOrientation.LANDSCAPE,
+            },
+            margin: {
+              top: convertInchesToTwip(0.5),
+              bottom: convertInchesToTwip(0.5),
+              left: convertInchesToTwip(0.5),
+              right: convertInchesToTwip(0.5),
+            },
+          },
+        },
         children: [
           new Paragraph({
             text: "아트이음 미술품 유통내역",
@@ -111,7 +137,8 @@ export async function buildWord(
           new Paragraph({ text: "" }),
           new Table({
             rows: [headerRow, ...dataRows],
-            width: { size: 100, type: WidthType.PERCENTAGE },
+            width: { size: tableWidthDxa, type: WidthType.DXA },
+            layout: TableLayoutType.FIXED,
           }),
         ],
       },
