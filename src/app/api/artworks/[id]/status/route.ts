@@ -17,9 +17,12 @@ export async function PATCH(
     return NextResponse.json({ error: "잘못된 상태 값입니다." }, { status: 400 });
   }
 
+  const buyerName = typeof body.buyerName === "string" ? body.buyerName : null;
+  const buyerContact = typeof body.buyerContact === "string" ? body.buyerContact : null;
+
   const artwork = await prisma.artwork.update({
     where: { id },
-    data: { status: "SOLD" },
+    data: { status: "SOLD", soldAt: new Date(), buyerName, buyerContact },
   });
 
   return NextResponse.json({ ok: true, artwork });

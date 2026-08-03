@@ -28,6 +28,7 @@ export async function POST(request: Request) {
   const price = formData.get("price");
   const category = formData.get("category");
   const image = formData.get("image");
+  const editionNumber = formData.get("editionNumber");
 
   if (typeof title !== "string" || !title.trim()) {
     return NextResponse.json({ error: "작품명을 입력해주세요." }, { status: 400 });
@@ -59,6 +60,8 @@ export async function POST(request: Request) {
       description: typeof description === "string" ? description : null,
       price: Math.round(priceNumber),
       category: category as ArtworkCategory,
+      editionNumber:
+        typeof editionNumber === "string" && editionNumber.trim() ? editionNumber.trim() : null,
       artistId: user.id,
       payment: {
         create: {

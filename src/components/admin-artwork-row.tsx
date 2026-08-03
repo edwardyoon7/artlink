@@ -23,18 +23,26 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
   const router = useRouter();
   const [status, setStatus] = useState(artwork.status);
   const [updating, setUpdating] = useState(false);
+  const [showSaleForm, setShowSaleForm] = useState(false);
+  const [buyerName, setBuyerName] = useState("");
+  const [buyerContact, setBuyerContact] = useState("");
   const { commission, settlement } = calcSettlement(artwork.price);
 
-  async function markSold() {
+  async function confirmSold() {
     setUpdating(true);
     const res = await fetch(`/api/artworks/${artwork.id}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "SOLD" }),
+      body: JSON.stringify({
+        status: "SOLD",
+        buyerName: buyerName.trim() || null,
+        buyerContact: buyerContact.trim() || null,
+      }),
     });
     setUpdating(false);
     if (res.ok) {
       setStatus("SOLD");
+      setShowSaleForm(false);
       router.refresh();
     }
   }
@@ -53,14 +61,55 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
         작가 정산액 {settlement.toLocaleString()}원
       </p>
 
-      {status === "LISTED" && (
+      {status === "LISTED" && !showSaleForm && (
         <button
-          disabled={updating}
-          onClick={markSold}
-          className="mt-4 rounded-full border border-ink/30 px-4 py-1.5 text-xs tracking-wide text-ink transition-colors hover:bg-ink hover:text-base disabled:opacity-40"
+          onClick={() => setShowSaleForm(true)}
+          className="mt-4 rounded-full border border-ink/30 px-4 py-1.5 text-xs tracking-wide text-ink transition-colors hover:bg-ink hover:text-base"
         >
           판매완료 처리
         </button>
+      )}
+
+      {status === "LISTED" && showSaleForm && (
+        <div className="mt-4 space-y-3 rounded-sm border border-ink/10 bg-ink/5 p-4">
+          <p className="text-xs text-ink/60">
+            구매자 정보는 선택 입력입니다 (내부 유통내역 관리용, 외부 제출 시에는 별도 옵션으로
+            제외할 수 있습니다).
+          </p>
+          <label className="block text-sm">
+            <span className="text-ink/70">구매자 성함 (선택)</span>
+            <input
+              value={buyerName}
+              onChange={(e) => setBuyerName(e.target.value)}
+              className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-1.5 outline-none focus:border-ink"
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="text-ink/70">구매자 연락처 (선택)</span>
+            <input
+              value={buyerContact}
+              onChange={(e) => setBuyerContact(e.target.value)}
+              className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-1.5 outline-none focus:border-ink"
+            />
+          </label>
+          <div className="flex gap-2">
+            <button
+              disabled={updating}
+              onClick={confirmSold}
+              className="rounded-full bg-ink px-4 py-1.5 text-xs tracking-wide text-base disabled:opacity-40"
+            >
+              {updating ? "처리 중..." : "판매완료 확정"}
+            </button>
+            <button
+              type="button"
+              disabled={updating}
+              onClick={() => setShowSaleForm(false)}
+              className="rounded-full border border-ink/30 px-4 py-1.5 text-xs tracking-wide text-ink"
+            >
+              취소
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

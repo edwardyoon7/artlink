@@ -88,19 +88,23 @@ enum ArtworkCategory {
 }
 
 model Artwork {
-  id          String          @id @default(cuid())
-  title       String
-  caption     String?
-  description String?
-  price       Int
-  imageUrl    String?
-  status      ArtworkStatus   @default(DRAFT)
-  category    ArtworkCategory @default(UNCATEGORIZED)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  artist      User            @relation(fields: [artistId], references: [id])
-  artistId    String
-  payment     Payment?
+  id            String          @id @default(cuid())
+  title         String
+  caption       String?
+  description   String?
+  price         Int
+  imageUrl      String?
+  editionNumber String?
+  status        ArtworkStatus   @default(DRAFT)
+  category      ArtworkCategory @default(UNCATEGORIZED)
+  soldAt        DateTime?
+  buyerName     String?
+  buyerContact  String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  artist        User            @relation(fields: [artistId], references: [id])
+  artistId      String
+  payment       Payment?
 }
 
 enum BookingStatus {

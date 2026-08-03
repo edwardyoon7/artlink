@@ -61,6 +61,13 @@ export function ArtworkForm({ suggestion }: { suggestion: Suggestion | null }) {
         />
       </label>
       <label className="block text-sm">
+        <span className="text-ink/70">에디션 번호 (선택, 판화·한정판 등에 해당할 경우 예: 3/50)</span>
+        <input
+          name="editionNumber"
+          className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-2 outline-none focus:border-ink"
+        />
+      </label>
+      <label className="block text-sm">
         <span className="text-ink/70">작품 이미지 (선택, 홈 화면 썸네일로 노출됩니다)</span>
         <input
           name="image"
