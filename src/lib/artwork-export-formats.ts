@@ -66,11 +66,17 @@ export async function buildWord(
   includeBuyer: boolean,
 ): Promise<Buffer> {
   const columns = columnsFor(includeBuyer);
+  const totalWidth = columns.reduce((sum, c) => sum + c.width, 0);
+  const cellWidth = (w: number) => ({
+    size: Math.round((w / totalWidth) * 100),
+    type: WidthType.PERCENTAGE,
+  });
 
   const headerRow = new TableRow({
     children: columns.map(
       (c) =>
         new TableCell({
+          width: cellWidth(c.width),
           children: [
             new Paragraph({ children: [new TextRun({ text: c.label, bold: true })] }),
           ],
@@ -84,6 +90,7 @@ export async function buildWord(
         children: columns.map(
           (c) =>
             new TableCell({
+              width: cellWidth(c.width),
               children: [new Paragraph(String(row[c.key] ?? ""))],
             }),
         ),
