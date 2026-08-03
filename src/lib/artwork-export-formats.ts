@@ -14,9 +14,11 @@ import {
 } from "docx";
 import type { SoldArtworkRow } from "@/lib/artwork-export";
 
+// TTF로 고정 — WOFF2는 압축 해제(brotli) 처리가 서버 환경에 따라 불안정하게 동작해
+// 글자가 안 보이는 문제가 있었음. pdfkit이 가장 안정적으로 지원하는 형식은 순수 TTF.
 const KOREAN_FONT_PATH = path.join(
   process.cwd(),
-  "node_modules/@fontsource/noto-sans-kr/files/noto-sans-kr-korean-400-normal.woff2",
+  "src/assets/fonts/NotoSansKR-Regular.ttf",
 );
 
 // PDF는 A4 가로(landscape) 기준 여백 제외 실사용 폭이 약 780pt라, 구매자 정보를 포함해도
