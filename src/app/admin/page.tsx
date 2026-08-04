@@ -21,6 +21,9 @@ export default async function AdminPage() {
         <div className="flex items-center justify-between">
           <h1 className="font-[var(--font-serif-kr)] text-3xl">신청 접수 관리</h1>
           <div className="flex gap-4 text-sm">
+            <Link href="/admin/dashboard" className="underline hover:text-ink">
+              대시보드
+            </Link>
             <Link href="/admin/payments" className="underline hover:text-ink">
               입금 확인
             </Link>
@@ -32,6 +35,9 @@ export default async function AdminPage() {
             </Link>
             <Link href="/admin/instructors" className="underline hover:text-ink">
               강사 관리
+            </Link>
+            <Link href="/admin/announcements" className="underline hover:text-ink">
+              공지사항 관리
             </Link>
           </div>
         </div>

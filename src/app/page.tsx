@@ -5,6 +5,7 @@ import { ArtworkSlideshow } from "@/components/artwork-slideshow";
 import { GoodsSlideshow } from "@/components/goods-slideshow";
 import { ThemeBackground } from "@/components/theme-background";
 import { HomeHero } from "@/components/home-hero";
+import { AnnouncementPopup } from "@/components/announcement-popup";
 import { prisma } from "@/lib/prisma";
 
 const HOME_PREVIEW_COUNT = 9;
@@ -36,10 +37,17 @@ export default async function Home() {
     prisma.goods.count({ where: { stage: { in: ["LISTED", "SOLD_OUT"] } } }),
   ]);
 
+  const announcements = await prisma.announcement.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, title: true, content: true },
+  });
+
   return (
     <div className="relative min-h-screen text-ink">
       <ThemeBackground />
       <SiteHeader />
+      <AnnouncementPopup announcements={announcements} />
 
       {/* 히어로: 작가·교육·작품을 잇는다는 메시지 (배경 테마에 따라 텍스트 색이 전환됨) */}
       <HomeHero />
