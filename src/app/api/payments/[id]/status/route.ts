@@ -48,6 +48,12 @@ export async function PATCH(
         });
       }
     }
+    if (payment.artistProfileId) {
+      await prisma.artistProfile.update({
+        where: { id: payment.artistProfileId },
+        data: { isPublished: true },
+      });
+    }
   }
 
   return NextResponse.json({ ok: true, payment });

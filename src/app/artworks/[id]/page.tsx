@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SiteHeader } from "@/components/site-header";
 import { ArtieumVirtualPreview } from "@/components/artieum-virtual-preview";
+import { ArtistProfileButton } from "@/components/artist-profile-button";
 
 export default async function ArtworkDetailPage({
   params,
@@ -16,7 +17,7 @@ export default async function ArtworkDetailPage({
 
   const artwork = await prisma.artwork.findUnique({
     where: { id },
-    include: { artist: true },
+    include: { artist: { include: { artistProfile: true } } },
   });
 
   if (!artwork || (artwork.status !== "LISTED" && artwork.status !== "SOLD")) {
@@ -59,7 +60,20 @@ export default async function ArtworkDetailPage({
             {artwork.caption && (
               <p className="mt-1 text-xs text-ink/50">{artwork.caption}</p>
             )}
-            <p className="mt-2 text-sm text-ink/60">{artwork.artist.name} 작가</p>
+            <div className="mt-2 flex items-center gap-2">
+              <p className="text-sm text-ink/60">{artwork.artist.name} 작가</p>
+              {isLoggedIn && artwork.artist.artistProfile?.isPublished && (
+                <ArtistProfileButton
+                  artistName={artwork.artist.name}
+                  profile={{
+                    photoUrl: artwork.artist.artistProfile.photoUrl,
+                    education: artwork.artist.artistProfile.education,
+                    exhibitions: artwork.artist.artistProfile.exhibitions,
+                    awards: artwork.artist.artistProfile.awards,
+                  }}
+                />
+              )}
+            </div>
 
             {isLoggedIn ? (
               <div className="mt-8 space-y-6">

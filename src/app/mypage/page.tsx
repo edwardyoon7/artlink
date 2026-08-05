@@ -9,6 +9,8 @@ import { getBankInfo, calcSettlement } from "@/lib/pricing";
 import { GOODS_STAGE_LABELS, GOODS_STAGE_CLASSES } from "@/lib/goods";
 import { ArtworkCategoryEditor } from "@/components/artwork-category-editor";
 import { ArtworkSizeEditor } from "@/components/artwork-size-editor";
+import { ArtistProfileEditor } from "@/components/artist-profile-editor";
+import { PROFILE_FEE, PROFILE_FEE_PROMO, isProfileFeePromoActive } from "@/lib/pricing";
 
 const ARTWORK_STATUS_LABEL: Record<string, string> = {
   DRAFT: "입금 대기",
@@ -60,7 +62,15 @@ export default async function MyPage() {
       })
     : [];
 
+  const artistProfile = user?.artistLevel === "PRO"
+    ? await prisma.artistProfile.findUnique({
+        where: { artistId: session.user.id },
+        include: { payment: true },
+      })
+    : null;
+
   const bankInfo = getBankInfo();
+  const promoActive = isProfileFeePromoActive();
 
   return (
     <div className="min-h-screen bg-base text-ink">
@@ -178,6 +188,64 @@ export default async function MyPage() {
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {user?.artistLevel === "PRO" && (
+          <div className="mt-16">
+            <div className="flex items-center justify-between">
+              <h2 className="font-[var(--font-serif-kr)] text-2xl">작가 프로필 노출 서비스</h2>
+              {!artistProfile && (
+                <Link
+                  href="/mypage/profile/new"
+                  className="rounded-full bg-terracotta px-5 py-2 text-xs tracking-wide text-base"
+                >
+                  + 신청하기
+                </Link>
+              )}
+            </div>
+            {!artistProfile ? (
+              <p className="mt-4 text-sm text-ink/60">
+                작품 상세 페이지에 사진·학력·전시경력·수상경력을 노출하는 프리미엄 서비스입니다.{" "}
+                {promoActive
+                  ? `프로모션가 ${PROFILE_FEE_PROMO.toLocaleString()}원 (정가 ${PROFILE_FEE.toLocaleString()}원)`
+                  : `${PROFILE_FEE.toLocaleString()}원`}
+                . 아직 신청하지 않으셨습니다.
+              </p>
+            ) : (
+              <div className="mt-4 rounded-sm border border-ink/20 p-6">
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs ${
+                      artistProfile.isPublished ? "bg-ink text-base" : "bg-ink/10 text-ink"
+                    }`}
+                  >
+                    {artistProfile.isPublished ? "게시 중" : "입금 대기"}
+                  </span>
+                </div>
+                {artistProfile.payment && artistProfile.payment.status !== "CONFIRMED" && (
+                  <div className="mt-3">
+                    <PaymentNotice
+                      paymentId={artistProfile.payment.id}
+                      amount={artistProfile.payment.amount}
+                      status={artistProfile.payment.status}
+                      depositorName={artistProfile.payment.depositorName}
+                      bankName={bankInfo.bankName}
+                      accountNumber={bankInfo.accountNumber}
+                      accountHolder={bankInfo.accountHolder}
+                    />
+                  </div>
+                )}
+                <ArtistProfileEditor
+                  profile={{
+                    photoUrl: artistProfile.photoUrl,
+                    education: artistProfile.education,
+                    exhibitions: artistProfile.exhibitions,
+                    awards: artistProfile.awards,
+                  }}
+                />
+              </div>
+            )}
           </div>
         )}
 

@@ -15,6 +15,7 @@ export default async function AdminPaymentsPage() {
       artwork: { include: { artist: true } },
       coachingBooking: { include: { artist: true, instructor: true } },
       goods: { include: { artist: true } },
+      artistProfile: { include: { artist: true } },
     },
   });
 
@@ -30,7 +31,11 @@ export default async function AdminPaymentsPage() {
         <div className="mt-10 space-y-4">
           {payments.length === 0 && <p className="text-sm text-ink/60">결제 내역이 없습니다.</p>}
           {payments.map((payment) => {
-            const artist = payment.artwork?.artist ?? payment.coachingBooking?.artist ?? payment.goods?.artist;
+            const artist =
+              payment.artwork?.artist ??
+              payment.coachingBooking?.artist ??
+              payment.goods?.artist ??
+              payment.artistProfile?.artist;
             const booking = payment.coachingBooking;
             const kind = payment.artwork
               ? "작품 위탁판매 등록비"
@@ -38,6 +43,8 @@ export default async function AdminPaymentsPage() {
               ? "코칭 예약"
               : payment.goods
               ? (GOODS_FEE_TYPE_LABELS[payment.type] ?? "굿즈")
+              : payment.artistProfile
+              ? "작가 프로필 노출 서비스"
               : "알 수 없음";
             return (
               <AdminPaymentRow

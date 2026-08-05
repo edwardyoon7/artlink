@@ -43,6 +43,7 @@ model User {
   artworks     Artwork[]
   coachingBookings CoachingBooking[]
   goods        Goods[]
+  artistProfile ArtistProfile?
 }
 
 model Application {
@@ -179,6 +180,7 @@ enum PaymentType {
   GOODS_IDEA_FEE
   GOODS_PRODUCTION_FEE
   GOODS_SAMPLE_FEE
+  PROFILE_FEE
 }
 
 enum PaymentStatus {
@@ -201,6 +203,24 @@ model Payment {
   coachingBookingId String?           @unique
   goods             Goods?            @relation(fields: [goodsId], references: [id])
   goodsId           String?
+  artistProfile     ArtistProfile?    @relation(fields: [artistProfileId], references: [id])
+  artistProfileId   String?           @unique
+}
+
+// 프로 작가 대상 유료 프리미엄 서비스 — 결제 확인(CONFIRMED) 시 isPublished가 true로 전환되며
+// 그 순간부터 작품 상세 페이지에 프로필(사진·학력·전시경력·수상경력)이 공개된다.
+model ArtistProfile {
+  id          String   @id @default(cuid())
+  photoUrl    String?
+  education   String?
+  exhibitions String?
+  awards      String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  artist      User     @relation(fields: [artistId], references: [id])
+  artistId    String   @unique
+  payment     Payment?
 }
 
 enum GoodsStage {
