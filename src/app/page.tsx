@@ -80,7 +80,7 @@ export default async function Home() {
       <section id="education" className="border-y border-ink/10 bg-base">
         <div className="mx-auto max-w-6xl px-6 py-32">
           <SectionHeading kr="교육" en="Education" />
-          <div className="mt-12 grid gap-10 md:grid-cols-[2fr_1fr]">
+          <div className="mt-12 grid gap-10">
             <div className="grid gap-10 sm:grid-cols-3 md:gap-8">
               <EducationStep
                 step="01"
@@ -98,10 +98,10 @@ export default async function Home() {
                 description="본인의 의지에 따라 전문 교육기관 진학까지 지원합니다."
               />
             </div>
-            {/* 모바일은 세로형(education.png), 데스크탑(md 이상)은 가로형(education-desktop.png) —
-                가로형 이미지 비율(2:1)에 맞춰 md 이상에서는 컨테이너 비율도 함께 바꿔준다.
-                next/image 대신 picture/source를 써야 화면 폭에 맞는 이미지 하나만 받고
-                안 쓰는 쪽은 아예 다운로드하지 않는다. */}
+            {/* 텍스트(01/02/03) 아래에 전체 폭으로 배치. 모바일은 세로형(education.png),
+                데스크탑(md 이상)은 가로형(education-desktop.png) — 가로형 이미지 비율(2:1)에
+                맞춰 md 이상에서는 컨테이너 비율도 함께 바꿔준다. next/image 대신 picture/source를
+                써야 화면 폭에 맞는 이미지 하나만 받고 안 쓰는 쪽은 아예 다운로드하지 않는다. */}
             <picture className="relative block aspect-[2/3] w-full overflow-hidden rounded-sm border border-ink/10 md:aspect-[2/1]">
               <source media="(min-width: 768px)" srcSet={EDUCATION_IMAGE_DESKTOP} />
               <img
