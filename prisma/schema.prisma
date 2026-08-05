@@ -44,6 +44,7 @@ model User {
   coachingBookings CoachingBooking[]
   goods        Goods[]
   artistProfile ArtistProfile?
+  favorites    Favorite[]
 }
 
 model Application {
@@ -115,6 +116,7 @@ model Artwork {
   artist        User            @relation(fields: [artistId], references: [id])
   artistId      String
   payment       Payment?
+  favorites     Favorite[]
 }
 
 enum BookingStatus {
@@ -209,6 +211,19 @@ model Payment {
   goodsId           String?
   artistProfile     ArtistProfile?    @relation(fields: [artistProfileId], references: [id])
   artistProfileId   String?           @unique
+}
+
+// 컬렉터(또는 어떤 역할이든 로그인 사용자)가 작품을 찜해두는 기능. 작품이 삭제되면(테스트
+// 데이터 정리 스크립트 등) 같이 정리되도록 onDelete: Cascade로 둔다.
+model Favorite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  artwork   Artwork  @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+  artworkId String
+
+  @@unique([userId, artworkId])
 }
 
 // 프로 작가 대상 유료 프리미엄 서비스 — 결제 확인(CONFIRMED) 시 isPublished가 true로 전환되며

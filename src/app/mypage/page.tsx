@@ -10,6 +10,7 @@ import { GOODS_STAGE_LABELS, GOODS_STAGE_CLASSES } from "@/lib/goods";
 import { ArtworkCategoryEditor } from "@/components/artwork-category-editor";
 import { ArtworkSizeEditor } from "@/components/artwork-size-editor";
 import { ArtistProfileEditor } from "@/components/artist-profile-editor";
+import { ArtworkCard } from "@/components/artwork-card";
 import { PROFILE_FEE, PROFILE_FEE_PROMO, isProfileFeePromoActive } from "@/lib/pricing";
 
 const ARTWORK_STATUS_LABEL: Record<string, string> = {
@@ -68,6 +69,12 @@ export default async function MyPage() {
         include: { payment: true },
       })
     : null;
+
+  const favorites = await prisma.favorite.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+    include: { artwork: { include: { artist: true } } },
+  });
 
   const bankInfo = getBankInfo();
   const promoActive = isProfileFeePromoActive();
@@ -134,6 +141,26 @@ export default async function MyPage() {
           ))}
         </div>
         )}
+
+        <div className="mt-16">
+          <h2 className="font-[var(--font-serif-kr)] text-2xl">찜한 작품</h2>
+          {favorites.length === 0 ? (
+            <p className="mt-4 text-sm text-ink/60">
+              아직 찜한 작품이 없습니다. 마음에 드는 작품을 찾으면 하트 아이콘을 눌러 담아보세요.
+            </p>
+          ) : (
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+              {favorites.map((favorite) => (
+                <ArtworkCard
+                  key={favorite.id}
+                  artwork={favorite.artwork}
+                  showFavorite
+                  isFavorited
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
         {user?.artistLevel === "PRO" && (
           <div className="mt-16">

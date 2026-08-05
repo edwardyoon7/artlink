@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ARTWORK_CATEGORY_LABELS } from "@/lib/artwork-category";
+import { FavoriteButton } from "@/components/favorite-button";
 import type { ArtworkCategory } from "@/generated/prisma/client";
 
 type Artwork = {
@@ -13,10 +14,19 @@ type Artwork = {
   artist: { name: string };
 };
 
-export function ArtworkCard({ artwork }: { artwork: Artwork }) {
+export function ArtworkCard({
+  artwork,
+  isFavorited = false,
+  showFavorite = false,
+}: {
+  artwork: Artwork;
+  isFavorited?: boolean;
+  showFavorite?: boolean;
+}) {
   return (
     <Link href={`/artworks/${artwork.id}`} className="group block">
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-ink/5">
+        {showFavorite && <FavoriteButton artworkId={artwork.id} initialFavorited={isFavorited} variant="overlay" />}
         {artwork.imageUrl ? (
           <Image
             src={artwork.imageUrl}

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { SiteHeader } from "@/components/site-header";
 import { ArtieumVirtualPreview } from "@/components/artieum-virtual-preview";
 import { ArtistProfileButton } from "@/components/artist-profile-button";
+import { FavoriteButton } from "@/components/favorite-button";
 
 export default async function ArtworkDetailPage({
   params,
@@ -25,6 +26,11 @@ export default async function ArtworkDetailPage({
   }
 
   const isLoggedIn = !!session?.user;
+  const isFavorited = session?.user
+    ? !!(await prisma.favorite.findUnique({
+        where: { userId_artworkId: { userId: session.user.id, artworkId: artwork.id } },
+      }))
+    : false;
 
   return (
     <div className="min-h-screen bg-base text-ink">
@@ -77,9 +83,12 @@ export default async function ArtworkDetailPage({
 
             {isLoggedIn ? (
               <div className="mt-8 space-y-6">
-                <p className="text-2xl font-[var(--font-serif-kr)]">
-                  {artwork.price.toLocaleString()}원
-                </p>
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-2xl font-[var(--font-serif-kr)]">
+                    {artwork.price.toLocaleString()}원
+                  </p>
+                  <FavoriteButton artworkId={artwork.id} initialFavorited={isFavorited} />
+                </div>
                 {artwork.description && (
                   <p className="whitespace-pre-line text-sm leading-relaxed text-ink/70">
                     {artwork.description}

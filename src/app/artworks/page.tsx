@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { ArtworkCard } from "@/components/artwork-card";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { ARTWORK_CATEGORY_LABELS, ARTWORK_CATEGORY_FILTER_OPTIONS } from "@/lib/artwork-category";
 import type { ArtworkCategory, Prisma } from "@/generated/prisma/client";
@@ -49,6 +50,8 @@ export default async function ArtworksPage({
     }),
   };
 
+  const session = await auth();
+
   const [artworks, total] = await Promise.all([
     prisma.artwork.findMany({
       where,
@@ -59,6 +62,17 @@ export default async function ArtworksPage({
     }),
     prisma.artwork.count({ where }),
   ]);
+
+  const favoritedIds = session?.user
+    ? new Set(
+        (
+          await prisma.favorite.findMany({
+            where: { userId: session.user.id, artworkId: { in: artworks.map((a) => a.id) } },
+            select: { artworkId: true },
+          })
+        ).map((f) => f.artworkId),
+      )
+    : new Set<string>();
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -148,7 +162,12 @@ export default async function ArtworksPage({
         ) : (
           <div className="mt-12 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
             {artworks.map((artwork) => (
-              <ArtworkCard key={artwork.id} artwork={artwork} />
+              <ArtworkCard
+                key={artwork.id}
+                artwork={artwork}
+                showFavorite={!!session?.user}
+                isFavorited={favoritedIds.has(artwork.id)}
+              />
             ))}
           </div>
         )}
