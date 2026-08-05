@@ -14,13 +14,17 @@ export async function PATCH(
   const { id } = await params;
   const payment = await prisma.payment.findUnique({
     where: { id },
-    include: { artwork: true, coachingBooking: true, goods: true },
+    include: { artwork: true, coachingBooking: true, goods: true, artistProfile: true },
   });
   if (!payment) {
     return NextResponse.json({ error: "결제 정보를 찾을 수 없습니다." }, { status: 404 });
   }
 
-  const ownerId = payment.artwork?.artistId ?? payment.coachingBooking?.artistId ?? payment.goods?.artistId;
+  const ownerId =
+    payment.artwork?.artistId ??
+    payment.coachingBooking?.artistId ??
+    payment.goods?.artistId ??
+    payment.artistProfile?.artistId;
   if (ownerId !== session.user.id) {
     return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
   }
