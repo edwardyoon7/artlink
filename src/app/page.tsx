@@ -15,7 +15,10 @@ const HOME_PREVIEW_COUNT = 9;
 // 아마추어가 그렸다"는 오해를 줄 수 있어 별도로 준비한 대표 이미지를 고정으로 사용
 const PRO_ARTIST_IMAGE = "/home-images/pro-artist.jpg";
 const AMATEUR_ARTIST_IMAGE = "/home-images/amateur-artist.jpg";
-const EDUCATION_IMAGE = "/home-images/education.png";
+// 모바일(세로형)·데스크탑(가로형) 각각 별도로 제작된 이미지 — <picture>로 화면 폭에 맞는
+// 쪽만 내려받도록 분기(둘 다 받으면 낭비라 하나만 받게 함)
+const EDUCATION_IMAGE_MOBILE = "/home-images/education.png";
+const EDUCATION_IMAGE_DESKTOP = "/home-images/education-desktop.png";
 
 export default async function Home() {
   const [artworks, artworkCount] = await Promise.all([
@@ -95,15 +98,18 @@ export default async function Home() {
                 description="본인의 의지에 따라 전문 교육기관 진학까지 지원합니다."
               />
             </div>
-            <div className="relative aspect-[2/3] w-full overflow-hidden rounded-sm border border-ink/10">
-              <Image
-                src={EDUCATION_IMAGE}
-                alt=""
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-cover"
+            {/* 모바일은 세로형(education.png), 데스크탑(md 이상)은 가로형(education-desktop.png) —
+                가로형 이미지 비율(2:1)에 맞춰 md 이상에서는 컨테이너 비율도 함께 바꿔준다.
+                next/image 대신 picture/source를 써야 화면 폭에 맞는 이미지 하나만 받고
+                안 쓰는 쪽은 아예 다운로드하지 않는다. */}
+            <picture className="relative block aspect-[2/3] w-full overflow-hidden rounded-sm border border-ink/10 md:aspect-[2/1]">
+              <source media="(min-width: 768px)" srcSet={EDUCATION_IMAGE_DESKTOP} />
+              <img
+                src={EDUCATION_IMAGE_MOBILE}
+                alt="교육(Education): 01 맞춤 커리큘럼 — 비전공·취미 활동자를 위한 다양한 커리큘럼으로 시작합니다. 02 1:1 코칭 — 작가로 성장할 수 있도록 개인 맞춤 코칭을 제공합니다. 03 전문기관 진학 지원 — 본인의 의지에 따라 전문 교육기관 진학까지 지원합니다."
+                className="h-full w-full object-cover"
               />
-            </div>
+            </picture>
           </div>
         </div>
       </section>
