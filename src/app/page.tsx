@@ -7,6 +7,7 @@ import { ThemeBackground } from "@/components/theme-background";
 import { HomeHero } from "@/components/home-hero";
 import { AnnouncementPopup } from "@/components/announcement-popup";
 import { prisma } from "@/lib/prisma";
+import { getDailyFeaturedArtworks } from "@/lib/home-rotation";
 
 const HOME_PREVIEW_COUNT = 9;
 
@@ -18,12 +19,7 @@ const EDUCATION_IMAGE = "/home-images/education.png";
 
 export default async function Home() {
   const [artworks, artworkCount] = await Promise.all([
-    prisma.artwork.findMany({
-      where: { status: { in: ["LISTED", "SOLD"] } },
-      include: { artist: true },
-      orderBy: { createdAt: "desc" },
-      take: HOME_PREVIEW_COUNT,
-    }),
+    getDailyFeaturedArtworks(),
     prisma.artwork.count({ where: { status: { in: ["LISTED", "SOLD"] } } }),
   ]);
 
