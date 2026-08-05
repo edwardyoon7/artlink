@@ -97,6 +97,11 @@ model Artwork {
   editionNumber String?
   status        ArtworkStatus   @default(DRAFT)
   category      ArtworkCategory @default(UNCATEGORIZED)
+  // 실제 작품 크기(cm) — "ARTIEUM VIRTUAL" 가상 배치 미리보기의 비율 계산 기준.
+  // ArtworkCategory와 동일하게 기존 등록작에는 값이 없을 수 있어 nullable로 두고,
+  // 신규 등록 시에만 폼/API에서 필수로 강제한다.
+  widthCm       Float?
+  heightCm      Float?
   soldAt        DateTime?
   buyerName     String?
   buyerContact  String?

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SiteHeader } from "@/components/site-header";
+import { ArtieumVirtualPreview } from "@/components/artieum-virtual-preview";
 
 export default async function ArtworkDetailPage({
   params,
@@ -112,6 +113,15 @@ export default async function ArtworkDetailPage({
             )}
           </div>
         </div>
+
+        {artwork.imageUrl && artwork.widthCm != null && artwork.heightCm != null && (
+          <ArtieumVirtualPreview
+            imageUrl={artwork.imageUrl}
+            widthCm={artwork.widthCm}
+            heightCm={artwork.heightCm}
+            title={artwork.title}
+          />
+        )}
       </section>
     </div>
   );

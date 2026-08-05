@@ -8,6 +8,7 @@ import { PaymentNotice } from "@/components/payment-notice";
 import { getBankInfo, calcSettlement } from "@/lib/pricing";
 import { GOODS_STAGE_LABELS, GOODS_STAGE_CLASSES } from "@/lib/goods";
 import { ArtworkCategoryEditor } from "@/components/artwork-category-editor";
+import { ArtworkSizeEditor } from "@/components/artwork-size-editor";
 
 const ARTWORK_STATUS_LABEL: Record<string, string> = {
   DRAFT: "입금 대기",
@@ -155,6 +156,11 @@ export default async function MyPage() {
                         ` · 수수료 ${commission.toLocaleString()}원 · 정산액 ${settlement.toLocaleString()}원`}
                     </p>
                     <ArtworkCategoryEditor artworkId={artwork.id} category={artwork.category} />
+                    <ArtworkSizeEditor
+                      artworkId={artwork.id}
+                      widthCm={artwork.widthCm}
+                      heightCm={artwork.heightCm}
+                    />
                     {artwork.payment && artwork.payment.status !== "CONFIRMED" && (
                       <div className="mt-3">
                         <PaymentNotice

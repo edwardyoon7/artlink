@@ -29,6 +29,8 @@ export async function POST(request: Request) {
   const category = formData.get("category");
   const image = formData.get("image");
   const editionNumber = formData.get("editionNumber");
+  const widthCm = formData.get("widthCm");
+  const heightCm = formData.get("heightCm");
 
   if (typeof title !== "string" || !title.trim()) {
     return NextResponse.json({ error: "작품명을 입력해주세요." }, { status: 400 });
@@ -42,6 +44,14 @@ export async function POST(request: Request) {
     !SELECTABLE_ARTWORK_CATEGORIES.includes(category as ArtworkCategory)
   ) {
     return NextResponse.json({ error: "작품 구분을 선택해주세요." }, { status: 400 });
+  }
+  const widthCmNumber = Number(widthCm);
+  const heightCmNumber = Number(heightCm);
+  if (!Number.isFinite(widthCmNumber) || widthCmNumber <= 0 || widthCmNumber > 1000) {
+    return NextResponse.json({ error: "올바른 가로 크기(cm)를 입력해주세요." }, { status: 400 });
+  }
+  if (!Number.isFinite(heightCmNumber) || heightCmNumber <= 0 || heightCmNumber > 1000) {
+    return NextResponse.json({ error: "올바른 세로 크기(cm)를 입력해주세요." }, { status: 400 });
   }
   const imageFile = image instanceof File && image.size > 0 ? image : null;
   if (imageFile) {
@@ -62,6 +72,8 @@ export async function POST(request: Request) {
       category: category as ArtworkCategory,
       editionNumber:
         typeof editionNumber === "string" && editionNumber.trim() ? editionNumber.trim() : null,
+      widthCm: widthCmNumber,
+      heightCm: heightCmNumber,
       artistId: user.id,
       payment: {
         create: {

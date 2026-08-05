@@ -67,6 +67,36 @@ export function ArtworkForm({ suggestion }: { suggestion: Suggestion | null }) {
           className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-2 outline-none focus:border-ink"
         />
       </label>
+      <div className="grid grid-cols-2 gap-4">
+        <label className="block text-sm">
+          <span className="text-ink/70">실제 가로 크기 (cm)</span>
+          <input
+            name="widthCm"
+            type="number"
+            min={1}
+            max={1000}
+            step="0.1"
+            required
+            className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-2 outline-none focus:border-ink"
+          />
+        </label>
+        <label className="block text-sm">
+          <span className="text-ink/70">실제 세로 크기 (cm)</span>
+          <input
+            name="heightCm"
+            type="number"
+            min={1}
+            max={1000}
+            step="0.1"
+            required
+            className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-2 outline-none focus:border-ink"
+          />
+        </label>
+      </div>
+      <p className="text-xs text-ink/50">
+        실제 크기는 작품 상세 페이지의 “ARTIEUM VIRTUAL” 가상 배치 미리보기(현관·거실·사무실에 실제
+        비율로 걸어본 모습)를 만드는 데 사용됩니다.
+      </p>
       <label className="block text-sm">
         <span className="text-ink/70">작품 이미지 (선택, 홈 화면 썸네일로 노출됩니다)</span>
         <input
