@@ -9,6 +9,7 @@ type Artwork = {
   title: string;
   artistName: string;
   price: number;
+  finalPrice: number | null;
   status: string;
   paymentStatus: string;
 };
@@ -24,9 +25,13 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
   const [status, setStatus] = useState(artwork.status);
   const [updating, setUpdating] = useState(false);
   const [showSaleForm, setShowSaleForm] = useState(false);
+  const [finalPrice, setFinalPrice] = useState(String(artwork.price));
   const [buyerName, setBuyerName] = useState("");
   const [buyerContact, setBuyerContact] = useState("");
-  const { commission, settlement } = calcSettlement(artwork.price);
+
+  const settlementBasis = artwork.finalPrice ?? artwork.price;
+  const { commission, settlement } = calcSettlement(settlementBasis);
+  const finalPriceDiffersFromListed = Number(finalPrice) > 0 && Number(finalPrice) !== artwork.price;
 
   async function confirmSold() {
     setUpdating(true);
@@ -35,6 +40,7 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         status: "SOLD",
+        finalPrice: Number(finalPrice),
         buyerName: buyerName.trim() || null,
         buyerContact: buyerContact.trim() || null,
       }),
@@ -57,9 +63,14 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
         <span className="rounded-full bg-ink/10 px-3 py-1 text-xs">{STATUS_LABEL[status]}</span>
       </div>
       <p className="mt-3 text-sm text-ink/70">
-        판매가 {artwork.price.toLocaleString()}원 · 수수료(30%) {commission.toLocaleString()}원 ·
-        작가 정산액 {settlement.toLocaleString()}원
+        {status === "SOLD" ? "최종 판매가" : "위탁 등록가"} {settlementBasis.toLocaleString()}원 ·
+        수수료(30%) {commission.toLocaleString()}원 · 작가 정산액 {settlement.toLocaleString()}원
       </p>
+      {status === "SOLD" && artwork.finalPrice != null && artwork.finalPrice !== artwork.price && (
+        <p className="mt-1 text-xs text-terracotta">
+          ⚠ 위탁 등록가 {artwork.price.toLocaleString()}원과 다르게 판매되었습니다(협상가 적용).
+        </p>
+      )}
 
       {status === "LISTED" && !showSaleForm && (
         <button
@@ -81,6 +92,28 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
 
       {status === "LISTED" && showSaleForm && (
         <div className="mt-4 space-y-3 rounded-sm border border-ink/10 bg-ink/5 p-4">
+          <label className="block text-sm">
+            <span className="text-ink/70">
+              최종 판매가 (원) — 위탁 등록가 {artwork.price.toLocaleString()}원
+            </span>
+            <input
+              type="number"
+              min={1}
+              value={finalPrice}
+              onChange={(e) => setFinalPrice(e.target.value)}
+              className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-1.5 outline-none focus:border-ink"
+            />
+            <span className="mt-1 block text-xs text-ink/50">
+              원칙적으로 위탁 등록가 그대로 판매되어야 합니다. 이 값이 유통내역(세무 제출용
+              매출장)·작가 정산액 계산의 기준이 되니, 협상(네고) 없이 등록가대로 판매됐다면 그대로
+              두시면 됩니다.
+            </span>
+            {finalPriceDiffersFromListed && (
+              <span className="mt-1 block text-xs font-medium text-terracotta">
+                ⚠ 위탁 등록가와 다른 금액입니다 — 협상 판매인 경우에만 변경해주세요.
+              </span>
+            )}
+          </label>
           <p className="text-xs text-ink/60">
             구매자 정보는 선택 입력입니다 (내부 유통내역 관리용, 외부 제출 시에는 별도 옵션으로
             제외할 수 있습니다).
@@ -103,7 +136,7 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
           </label>
           <div className="flex gap-2">
             <button
-              disabled={updating}
+              disabled={updating || !finalPrice || Number(finalPrice) <= 0}
               onClick={confirmSold}
               className="rounded-full bg-ink px-4 py-1.5 text-xs tracking-wide text-base disabled:opacity-40"
             >

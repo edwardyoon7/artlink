@@ -104,6 +104,10 @@ model Artwork {
   widthCm       Float?
   heightCm      Float?
   soldAt        DateTime?
+  // 실제 최종 판매가 — 원칙적으로 위탁 등록가(price)와 같아야 하지만, 판매완료 처리 시점에
+  // 협상(네고)이 있었다면 실제 거래금액으로 달라질 수 있다. 유통내역(세무 제출용 매출장) ·
+  // 정산액 계산은 항상 이 값(없으면 price로 대체)을 기준으로 한다.
+  finalPrice    Int?
   buyerName     String?
   buyerContact  String?
   createdAt     DateTime        @default(now())

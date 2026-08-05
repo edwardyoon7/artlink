@@ -140,7 +140,13 @@
   1. 작품/코칭 등록 시 `Payment` 레코드가 `WAITING` 상태로 함께 생성됩니다.
   2. 신청자가 마이페이지에서 입금자명을 입력해 신고합니다 (`/api/payments/[id]/declare`).
   3. 운영자가 `/admin/payments`에서 실제 입금 내역과 대조해 확인하면(`CONFIRMED`) 작품은 `LISTED`, 코칭 예약은 `CONFIRMED`로 자동 전환됩니다.
-  4. 실제 작품이 판매되면 운영자가 `/admin/artworks`에서 "판매완료 처리"를 눌러 `SOLD`로 표시합니다 (수수료 계산은 자동 표시, 별도 정산 자동화는 없음).
+  4. 실제 작품이 판매되면 운영자가 `/admin/artworks`에서 "판매완료 처리"를 누르고, 이때 **최종 판매가**
+     (`Artwork.finalPrice`, 기본값은 위탁 등록가 `price`로 미리 채워짐)를 확인·확정해 `SOLD`로 표시합니다.
+     원칙적으로 위탁 등록가 그대로 판매되어야 하지만, 협상(네고)이 있었을 경우에만 값을 바꾸도록 안내하고
+     다르면 화면에 경고 문구가 뜹니다. 수수료·작가 정산액은 이 `finalPrice`(없으면 `price`) 기준으로
+     계산되며, `/admin/artworks`의 유통내역 추출(Excel/PDF/Word, `src/lib/artwork-export.ts`)도 이 값을
+     "판매금액"으로 사용합니다 — 관공서 세무 제출용 매출장의 정확도를 위해 등록가가 아닌 실제 최종
+     거래금액을 기준으로 삼습니다.
 - **진품보증서 발급 (관리자 전용)**: `SOLD`로 표시된 작품에 한해 `/admin/artworks`에 "진품보증서 발급 (PDF)"
   버튼이 나타나며, 클릭 시 `/api/artworks/[id]/certificate`가 A4 세로 PDF를 즉시 생성해 내려줍니다
   (`src/lib/certificate.ts`가 작가명·작품명·재료·크기·에디션·판매일을 DB에서 그대로 가져와 매번 수기로

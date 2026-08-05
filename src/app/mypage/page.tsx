@@ -151,7 +151,8 @@ export default async function MyPage() {
                 <p className="text-sm text-ink/60">등록한 작품이 없습니다.</p>
               )}
               {artworks.map((artwork) => {
-                const { commission, settlement } = calcSettlement(artwork.price);
+                const settlementBasis = artwork.finalPrice ?? artwork.price;
+                const { commission, settlement } = calcSettlement(settlementBasis);
                 return (
                   <div key={artwork.id} className="rounded-sm border border-ink/20 p-6">
                     <div className="flex items-center justify-between">
@@ -161,7 +162,7 @@ export default async function MyPage() {
                       </span>
                     </div>
                     <p className="mt-2 text-sm text-ink/70">
-                      판매가 {artwork.price.toLocaleString()}원
+                      {artwork.status === "SOLD" ? "최종 판매가" : "판매가"} {settlementBasis.toLocaleString()}원
                       {artwork.status === "SOLD" &&
                         ` · 수수료 ${commission.toLocaleString()}원 · 정산액 ${settlement.toLocaleString()}원`}
                     </p>

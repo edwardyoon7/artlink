@@ -20,7 +20,7 @@ export default async function AdminArtworksPage() {
       <section className="mx-auto max-w-5xl px-6 pt-40 pb-20">
         <h1 className="font-[var(--font-serif-kr)] text-3xl">작품 관리</h1>
         <p className="mt-2 text-sm text-ink/70">
-          입금 확인이 끝나 위탁판매 중인 작품이 실제로 판매되면 "판매완료 처리"를 눌러주세요.
+          입금 확인이 끝나 위탁판매 중인 작품이 실제로 판매되면 “판매완료 처리”를 눌러주세요.
         </p>
 
         <div className="mt-10">
@@ -37,6 +37,7 @@ export default async function AdminArtworksPage() {
                 title: artwork.title,
                 artistName: artwork.artist.name,
                 price: artwork.price,
+                finalPrice: artwork.finalPrice,
                 status: artwork.status,
                 paymentStatus: artwork.payment?.status ?? "WAITING",
               }}
