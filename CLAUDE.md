@@ -141,6 +141,14 @@
   2. 신청자가 마이페이지에서 입금자명을 입력해 신고합니다 (`/api/payments/[id]/declare`).
   3. 운영자가 `/admin/payments`에서 실제 입금 내역과 대조해 확인하면(`CONFIRMED`) 작품은 `LISTED`, 코칭 예약은 `CONFIRMED`로 자동 전환됩니다.
   4. 실제 작품이 판매되면 운영자가 `/admin/artworks`에서 "판매완료 처리"를 눌러 `SOLD`로 표시합니다 (수수료 계산은 자동 표시, 별도 정산 자동화는 없음).
+- **진품보증서 발급 (관리자 전용)**: `SOLD`로 표시된 작품에 한해 `/admin/artworks`에 "진품보증서 발급 (PDF)"
+  버튼이 나타나며, 클릭 시 `/api/artworks/[id]/certificate`가 A4 세로 PDF를 즉시 생성해 내려줍니다
+  (`src/lib/certificate.ts`가 작가명·작품명·재료·크기·에디션·판매일을 DB에서 그대로 가져와 매번 수기로
+  작성할 필요가 없음, `src/lib/certificate-pdf.ts`가 pdfkit으로 렌더링). 작가명 (인) / 아트이음 대표
+  윤진수 (인) 서명란이 포함되며, 대표자명·주소·연락처는 사이트 푸터(`site-footer.tsx`)와 동일한 값을
+  씁니다. 작품 사진은 `sharp`로 리사이즈 후 JPEG로 재인코딩해 삽입합니다 — 원본 업로드가 수십MB PNG일
+  수 있어(작품 등록 시 최대 50MB 허용) pdfkit에 원본을 그대로 넘기면 증서 PDF가 수십MB로 부풀려짐.
+  일반 방문객·작가에게는 이 메뉴가 전혀 노출되지 않습니다(role=ADMIN만 접근 가능, 403).
 - **계좌 정보**: `.env`의 `BANK_NAME`/`BANK_ACCOUNT_NUMBER`/`BANK_ACCOUNT_HOLDER` (플레이스홀더 상태 — 실제 계좌로 교체 필요, git에는 커밋되지 않음)
 - **가격 컨설팅(무료)**: `/mypage/artworks/new`에서 `src/lib/price-suggestion.ts`의 `getPriceSuggestion()`이 계산한
   참고 가격대를 보여줍니다. 이 작가의 최근 판매완료(SOLD) 작품 최대 5건을 최신순 가중평균(1·0.8·0.6·0.4·0.2)한 뒤,

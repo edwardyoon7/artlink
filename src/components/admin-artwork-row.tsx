@@ -70,6 +70,15 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
         </button>
       )}
 
+      {status === "SOLD" && (
+        <a
+          href={`/api/artworks/${artwork.id}/certificate`}
+          className="mt-4 inline-block rounded-full border border-terracotta/50 px-4 py-1.5 text-xs tracking-wide text-terracotta transition-colors hover:bg-terracotta hover:text-base"
+        >
+          진품보증서 발급 (PDF)
+        </a>
+      )}
+
       {status === "LISTED" && showSaleForm && (
         <div className="mt-4 space-y-3 rounded-sm border border-ink/10 bg-ink/5 p-4">
           <p className="text-xs text-ink/60">
