@@ -35,6 +35,7 @@ export default async function GoodsDetailPublicPage({
                 src={goods.imageUrl}
                 alt={goods.title}
                 fill
+                unoptimized
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
               />

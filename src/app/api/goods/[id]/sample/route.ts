@@ -4,7 +4,8 @@ import path from "path";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-const SAMPLE_ROOT = path.join(process.cwd(), "public", "goods-samples");
+// public/ 밖에 두는 이유는 src/app/api/artworks/route.ts의 IMAGE_ROOT 주석 참고
+const SAMPLE_ROOT = path.join(process.cwd(), "runtime-uploads", "goods-samples");
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
 

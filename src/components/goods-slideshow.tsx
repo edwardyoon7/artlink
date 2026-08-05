@@ -44,6 +44,7 @@ export function GoodsSlideshow({ goods }: { goods: Goods[] }) {
               src={current.imageUrl}
               alt={current.title}
               fill
+              unoptimized
               sizes="(max-width: 768px) 100vw, 768px"
               className="object-cover transition-opacity duration-500"
               priority

@@ -35,7 +35,9 @@ function formatSize(widthCm: number | null, heightCm: number | null) {
 // JPEG의 자체 압축 스트림을 그대로 재사용하도록 한다(재인코딩 없이 삽입되어 훨씬 효율적).
 async function loadCertificateImage(imageUrl: string): Promise<Buffer | null> {
   try {
-    const imagePath = path.join(process.cwd(), "public", imageUrl);
+    // imageUrl(예: "/artwork-uploads/xxx.jpg")은 runtime-uploads/ 밑에 저장된다
+    // (public/ 밖에 두는 이유는 src/app/api/artworks/route.ts의 IMAGE_ROOT 주석 참고).
+    const imagePath = path.join(process.cwd(), "runtime-uploads", imageUrl);
     const original = await readFile(imagePath);
     return await sharp(original).resize(360, 360, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 82 }).toBuffer();
   } catch {

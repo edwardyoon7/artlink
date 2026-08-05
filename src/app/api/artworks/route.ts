@@ -7,7 +7,13 @@ import { LISTING_FEE } from "@/lib/pricing";
 import { SELECTABLE_ARTWORK_CATEGORIES } from "@/lib/artwork-category";
 import type { ArtworkCategory } from "@/generated/prisma/client";
 
-const IMAGE_ROOT = path.join(process.cwd(), "public", "artwork-uploads");
+// 주의: public/ 밖에 둔다 — 이 Next.js 버전은 서버가 뜬 시점에 public/ 폴더 목록을 스냅샷으로
+// 고정해두고 이후 요청은 그 목록만 확인한다(node_modules/next/dist/server/lib/router-utils/filesystem.js
+// setupFsCheck). 즉 서버 부팅 이후 public/ 안에 새로 생긴 파일은 재시작 전까지 전부 404가 난다.
+// 작품 이미지처럼 런타임에 계속 추가되는 파일은 public/ 밖(runtime-uploads/)에 저장하고
+// src/app/artwork-uploads/[...path]/route.ts(매 요청마다 디스크에서 직접 읽어 응답, 스냅샷과 무관)로
+// 서빙한다(자세한 배경은 CLAUDE.md 참고).
+const IMAGE_ROOT = path.join(process.cwd(), "runtime-uploads", "artwork-uploads");
 const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50MB
 
 export async function POST(request: Request) {

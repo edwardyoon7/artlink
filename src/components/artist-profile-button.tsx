@@ -63,7 +63,7 @@ export function ArtistProfileButton({
               <div className="mt-4 flex items-start gap-4">
                 {profile.photoUrl ? (
                   <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-sm border border-ink/10">
-                    <Image src={profile.photoUrl} alt={`${artistName} 작가 사진`} fill sizes="96px" className="object-cover" />
+                    <Image src={profile.photoUrl} alt={`${artistName} 작가 사진`} fill unoptimized sizes="96px" className="object-cover" />
                   </div>
                 ) : (
                   <div className="flex aspect-square w-24 shrink-0 items-center justify-center rounded-sm border border-ink/10 bg-ink/5 text-[10px] text-ink/40">

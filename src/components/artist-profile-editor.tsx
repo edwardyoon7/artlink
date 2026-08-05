@@ -46,7 +46,7 @@ export function ArtistProfileEditor({ profile }: { profile: Profile }) {
       <div className="flex items-center gap-4">
         {profile.photoUrl && (
           <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-sm">
-            <Image src={profile.photoUrl} alt="프로필 사진" fill sizes="64px" className="object-cover" />
+            <Image src={profile.photoUrl} alt="프로필 사진" fill unoptimized sizes="64px" className="object-cover" />
           </div>
         )}
         <label className="block text-sm">

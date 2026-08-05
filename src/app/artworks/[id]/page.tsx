@@ -43,6 +43,7 @@ export default async function ArtworkDetailPage({
                 src={artwork.imageUrl}
                 alt={artwork.title}
                 fill
+                unoptimized
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
               />

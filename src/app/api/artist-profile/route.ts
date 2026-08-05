@@ -5,7 +5,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getProfileFee } from "@/lib/pricing";
 
-const PHOTO_ROOT = path.join(process.cwd(), "public", "profile-uploads");
+// public/ 밖에 두는 이유는 src/app/api/artworks/route.ts의 IMAGE_ROOT 주석 참고
+const PHOTO_ROOT = path.join(process.cwd(), "runtime-uploads", "profile-uploads");
 const MAX_PHOTO_SIZE = 10 * 1024 * 1024; // 10MB
 
 async function savePhoto(profileId: string, file: File) {
