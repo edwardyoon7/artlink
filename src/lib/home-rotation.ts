@@ -22,7 +22,11 @@ function todayIndexKst(now: Date): number {
  * 섞인다 — 그래서 첫날부터 "과거부터 현재까지" 골고루 소개되고, 며칠에 걸쳐 전체 작가가
  * 한 번씩 돌아가며 노출된다(전체 작가 수가 HOME_FEATURED_SLOTS 이하면 매일 전원 노출).
  *
- * 한 작가의 작품이 여러 점이면, 그 작가 차례일 때마다 대표작도 날짜별로 돌아가며 바뀐다.
+ * 한 작가의 작품이 여러 점이면, 그 작가 차례일 때마다 대표작도 날짜별로 돌아가며 바뀐다. 다만
+ * "작가 1명당 하루 1작품"만 엄격히 지키면, 작가 수가 적을 때(HOME_FEATURED_SLOTS보다 적을 때)
+ * 오히려 예전(최신 등록순 9개)보다 슬라이드 수가 줄어드는 역효과가 생긴다 — 예를 들어 작가가
+ * 2명뿐이면 늘 2장만 보이게 됨. 그래서 1인 1점 우선 배정 후에도 자리가 남으면(HOME_FEATURED_SLOTS
+ * 미만), 작품을 더 가진 작가부터 라운드로빈으로 추가 배정해 가능한 한 슬롯을 다 채운다.
  */
 export async function getDailyFeaturedArtworks(now: Date = new Date()) {
   const artistsWithArtworks = await prisma.user.findMany({
@@ -52,9 +56,27 @@ export async function getDailyFeaturedArtworks(now: Date = new Date()) {
   // 인터리브 배정: i번째 작가는 (i % groupCount)번 묶음 소속 → 같은 묶음 안에 과거~최근이 고르게 섞임
   const todaysArtists = artists.filter((_, i) => i % groupCount === todayGroup);
 
-  return todaysArtists.map((artist) => {
+  // 작가별로 오늘의 시작 오프셋부터 순서대로 작품을 나열(대표작이 매일 바뀌도록).
+  const rotatedWorksByArtist = todaysArtists.map((artist) => {
     const works = artist.artworks;
-    const pick = works[dayIndex % works.length];
-    return pick;
+    const offset = dayIndex % works.length;
+    return [...works.slice(offset), ...works.slice(0, offset)];
   });
+
+  // 라운드 0: 작가마다 1점씩. 슬롯이 남으면 라운드 1, 2, ...로 넘어가며 각 작가의 다음 작품을 추가
+  // 배정 — 그래서 작가 수가 적을 때도 HOME_FEATURED_SLOTS까지 최대한 채운다.
+  const featured: (typeof rotatedWorksByArtist)[number][number][] = [];
+  for (let round = 0; featured.length < HOME_FEATURED_SLOTS; round++) {
+    let addedThisRound = false;
+    for (const works of rotatedWorksByArtist) {
+      if (featured.length >= HOME_FEATURED_SLOTS) break;
+      if (round < works.length) {
+        featured.push(works[round]);
+        addedThisRound = true;
+      }
+    }
+    if (!addedThisRound) break; // 오늘 소개될 작가들의 작품을 전부 다 썼으면 종료
+  }
+
+  return featured;
 }
