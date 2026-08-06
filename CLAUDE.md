@@ -128,10 +128,15 @@
   필수)**·**실제 가로×세로 크기(cm, 필수)**·**가격(직접 입력)**·**썸네일 이미지(선택)**를 함께 등록. 실제 크기는
   상세 페이지의 "ARTIEUM VIRTUAL" 가상 배치 미리보기 비율 계산에 쓰입니다(아래 참고). `ArtworkCategory`와 마찬가지로
   이 필드 추가 이전 등록작은 값이 비어 있을 수 있어, 작가가 `/mypage`의 "내 작품" 목록에서 직접 채워 넣을 수
-  있습니다(`PATCH /api/artworks/[id]/size`, 본인 소유 작품만 가능). 등록 시 위탁판매 등록비(`LISTING_FEE`,
-  `src/lib/pricing.ts`, 기본 3,000원)가 발생하며, 판매 완료 시 수수료 30%(`COMMISSION_RATE`)를 뗀 금액이 정산액으로
-  계산됩니다. 이미지는 `public/artworks/`에 저장되며(비공개 증빙서류 `uploads/`와 달리 공개 노출용), 결제가
-  `CONFIRMED`되어 `LISTED`(또는 `SOLD`) 상태가 되면 홈 화면 `#artworks` 섹션에 썸네일·작가명·가격과 함께 실제로
+  있습니다(`PATCH /api/artworks/[id]/size`, 본인 소유 작품만 가능). 등록비는 작가당 **처음
+  `FREE_ARTWORK_COUNT`(3)개까지 무료**이고(결제 대기 없이 바로 `LISTED`로 노출), 그 이후 등록분부터
+  작품 1점당 `LISTING_FEE`(`src/lib/pricing.ts`, 2,000원)가 발생합니다(2026-08-06, 경쟁 플랫폼 대부분이
+  등록 자체는 무료이고 판매 시 수수료만 받는 구조라는 걸 확인하고 신규 작가 진입장벽을 낮추기 위해
+  3,000원 균일 부과에서 변경 — `getListingFee(existingArtworkCount)`). 판매 완료 시 수수료
+  30%(`COMMISSION_RATE`)를 뗀 금액이 정산액으로 계산됩니다. 이미지는 `runtime-uploads/artwork-uploads/`에
+  저장되고 `src/app/artwork-uploads/[...path]/route.ts`가 서빙합니다(`public/`이 아님 — 이유는 해당
+  라우트 파일의 주석 참고). 등록비가 있는 경우 결제가 `CONFIRMED`되어 `LISTED`(또는 `SOLD`) 상태가
+  되면, 무료 등록분은 등록 즉시, 홈 화면 `#artworks` 섹션에 썸네일·작가명·가격과 함께 실제로
   노출됩니다 (`src/app/page.tsx`가 서버에서 직접 조회). 홈에는 최대 9개까지 슬라이드쇼로 보이는데,
   **단순 최신순이 아니라 "일별 순환 노출"**(`src/lib/home-rotation.ts`의 `getDailyFeaturedArtworks()`)
   방식입니다 — 작품이 몇 점이든 "최신 9개"만 계속 보여주면 등록 순서가 밀린 작가는 새 작품이 9개만

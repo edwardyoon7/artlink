@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { LISTING_FEE } from "@/lib/pricing";
+import { getListingFee } from "@/lib/pricing";
 import { SELECTABLE_ARTWORK_CATEGORIES } from "@/lib/artwork-category";
 import type { ArtworkCategory } from "@/generated/prisma/client";
 
@@ -69,6 +69,11 @@ export async function POST(request: Request) {
     }
   }
 
+  // 처음 FREE_ARTWORK_COUNT개는 등록비 무료 — 결제 대기 없이 바로 노출(LISTED),
+  // 그 이후분만 기존처럼 계좌이체+운영자 확인 대기(DRAFT + Payment WAITING).
+  const existingArtworkCount = await prisma.artwork.count({ where: { artistId: user.id } });
+  const fee = getListingFee(existingArtworkCount);
+
   const artwork = await prisma.artwork.create({
     data: {
       title,
@@ -81,12 +86,9 @@ export async function POST(request: Request) {
       widthCm: widthCmNumber,
       heightCm: heightCmNumber,
       artistId: user.id,
-      payment: {
-        create: {
-          type: "LISTING_FEE",
-          amount: LISTING_FEE,
-        },
-      },
+      ...(fee > 0
+        ? { payment: { create: { type: "LISTING_FEE", amount: fee } } }
+        : { status: "LISTED" }),
     },
     include: { payment: true },
   });

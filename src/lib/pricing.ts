@@ -1,6 +1,15 @@
-export const LISTING_FEE = 3_000; // 위탁판매 등록비 (작품 1점당, 1회)
+// 위탁판매 등록비 — 작가당 처음 FREE_ARTWORK_COUNT개는 무료, 그 이후 등록분부터 작품 1점당
+// LISTING_FEE 부과 (2026-08-06, 경쟁 플랫폼 대부분이 등록 자체는 무료이고 판매 시 수수료만
+// 받는 구조라는 걸 확인하고 신규 작가 진입장벽을 낮추기 위해 3,000원 균일 부과에서 변경).
+export const FREE_ARTWORK_COUNT = 3;
+export const LISTING_FEE = 2_000;
 export const COACHING_FEE = 100_000; // 코칭 서비스 비용 (세션 1회당)
 export const COMMISSION_RATE = 0.3; // 위탁판매 수수료율 (판매가의 30%)
+
+// existingArtworkCount: 이번에 등록하는 작품을 제외한, 이 작가가 이미 등록한 작품 수
+export function getListingFee(existingArtworkCount: number) {
+  return existingArtworkCount < FREE_ARTWORK_COUNT ? 0 : LISTING_FEE;
+}
 
 // 프로 작가 프로필 노출 프리미엄 서비스 — 정가 20,000원, 프로모션 기간(~2026-11-30 KST)에는 50% 할인.
 // 신청 시점의 날짜로 금액이 확정되며(스냅샷), 이후 운영자 확인이 늦어져도 그 사이 프로모션이
