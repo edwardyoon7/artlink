@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import Link from "next/link";
 
 type ApplicationType = "PRO" | "AMATEUR";
@@ -163,16 +163,73 @@ function TextArea({
   );
 }
 
+const MAX_DOCUMENT_FILES = 5;
+
 function FileField({ label, name }: { label: string; name: string }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  function syncInputFiles(files: File[]) {
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => dataTransfer.items.add(file));
+    if (inputRef.current) {
+      inputRef.current.files = dataTransfer.files;
+    }
+  }
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    const newFiles = Array.from(event.target.files ?? []);
+    const merged = [...selectedFiles];
+    for (const file of newFiles) {
+      const isDuplicate = merged.some(
+        (f) => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified,
+      );
+      if (!isDuplicate) merged.push(file);
+    }
+    const limited = merged.slice(0, MAX_DOCUMENT_FILES);
+    setSelectedFiles(limited);
+    syncInputFiles(limited);
+  }
+
+  function handleRemove(index: number) {
+    const next = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(next);
+    syncInputFiles(next);
+  }
+
   return (
     <label className="block text-sm">
       <span className="text-ink/70">{label}</span>
       <input
+        ref={inputRef}
         name={name}
         type="file"
         multiple
+        onChange={handleChange}
         className="mt-1 block w-full text-sm text-ink/70 file:mr-4 file:rounded-full file:border-0 file:bg-ink/10 file:px-4 file:py-2 file:text-ink"
       />
+      <p className="mt-1 text-xs text-ink/40">
+        {selectedFiles.length}/{MAX_DOCUMENT_FILES}개 선택됨 · 여러 번 나눠 선택해도 누적됩니다.
+      </p>
+      {selectedFiles.length > 0 && (
+        <ul className="mt-2 space-y-1">
+          {selectedFiles.map((file, index) => (
+            <li
+              key={`${file.name}-${file.lastModified}-${index}`}
+              className="flex items-center justify-between rounded-sm border border-ink/10 px-3 py-1.5 text-xs text-ink/70"
+            >
+              <span className="truncate">{file.name}</span>
+              <button
+                type="button"
+                onClick={() => handleRemove(index)}
+                className="ml-3 shrink-0 text-ink/50 hover:text-ink"
+              >
+                삭제
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </label>
   );
 }
