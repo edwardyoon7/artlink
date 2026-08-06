@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { SiteHeader } from "@/components/site-header";
 import { AnnouncementCreateForm } from "@/components/announcement-create-form";
 import { AdminAnnouncementRow } from "@/components/admin-announcement-row";
+import { formatDateTimeKST } from "@/lib/format-date";
 
 export default async function AdminAnnouncementsPage() {
   const session = await auth();
@@ -50,7 +51,7 @@ export default async function AdminAnnouncementsPage() {
                 title: a.title,
                 content: a.content,
                 isActive: a.isActive,
-                createdAt: a.createdAt.toLocaleString("ko-KR"),
+                createdAt: formatDateTimeKST(a.createdAt),
               }}
             />
           ))}

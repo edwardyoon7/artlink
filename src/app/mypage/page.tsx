@@ -12,6 +12,7 @@ import { ArtworkSizeEditor } from "@/components/artwork-size-editor";
 import { ArtistProfileEditor } from "@/components/artist-profile-editor";
 import { ArtworkCard } from "@/components/artwork-card";
 import { PROFILE_FEE, PROFILE_FEE_PROMO, isProfileFeePromoActive } from "@/lib/pricing";
+import { formatDateKST, formatDateTimeKST } from "@/lib/format-date";
 
 const ARTWORK_STATUS_LABEL: Record<string, string> = {
   DRAFT: "입금 대기",
@@ -121,7 +122,7 @@ export default async function MyPage() {
                 <StatusBadge status={app.status} />
               </div>
               <p className="mt-3 text-sm text-ink/70">
-                신청일: {app.createdAt.toLocaleDateString("ko-KR")}
+                신청일: {formatDateKST(app.createdAt)}
               </p>
               {app.documents.length > 0 && (
                 <div className="mt-1 text-sm text-ink/60">
@@ -337,7 +338,7 @@ export default async function MyPage() {
                 <div key={booking.id} className="rounded-sm border border-ink/20 p-6">
                   <div className="flex items-center justify-between">
                     <p className="font-[var(--font-serif-kr)] text-lg">
-                      {booking.preferredDate.toLocaleString("ko-KR")}
+                      {formatDateTimeKST(booking.preferredDate)}
                     </p>
                     <span className="rounded-full bg-terracotta/15 px-3 py-1 text-xs text-terracotta">
                       {BOOKING_STATUS_LABEL[booking.status]}

@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SiteHeader } from "@/components/site-header";
 import { AdminApplicationRow } from "@/components/admin-application-row";
+import { formatDateTimeKST } from "@/lib/format-date";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -63,7 +64,7 @@ export default async function AdminPage() {
                 career: app.career,
                 exhibitionCount: app.exhibitionCount,
                 motivation: app.motivation,
-                createdAt: app.createdAt.toLocaleString("ko-KR"),
+                createdAt: formatDateTimeKST(app.createdAt),
                 documents: app.documents.map((d) => ({ id: d.id, filename: d.filename })),
               }}
             />

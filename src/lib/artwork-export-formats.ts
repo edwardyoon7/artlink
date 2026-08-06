@@ -16,6 +16,7 @@ import {
   convertInchesToTwip,
 } from "docx";
 import type { SoldArtworkRow } from "@/lib/artwork-export";
+import { formatDateTimeKST } from "@/lib/format-date";
 
 // TTF로 고정 — WOFF2는 압축 해제(brotli) 처리가 서버 환경에 따라 불안정하게 동작해
 // 글자가 안 보이는 문제가 있었음. pdfkit이 가장 안정적으로 지원하는 형식은 순수 TTF.
@@ -133,7 +134,7 @@ export async function buildWord(
             text: "아트이음 미술품 유통내역",
             heading: HeadingLevel.HEADING_1,
           }),
-          new Paragraph({ text: `생성일: ${new Date().toLocaleString("ko-KR")}` }),
+          new Paragraph({ text: `생성일: ${formatDateTimeKST(new Date())}` }),
           new Paragraph({ text: "" }),
           new Table({
             rows: [headerRow, ...dataRows],
@@ -170,7 +171,7 @@ export async function buildPdf(
     function drawHeaderTitle() {
       doc.fontSize(15).text("아트이음 미술품 유통내역", marginLeft, doc.y);
       doc.fontSize(8).fillColor("#666666");
-      doc.text(`생성일: ${new Date().toLocaleString("ko-KR")}`, marginLeft);
+      doc.text(`생성일: ${formatDateTimeKST(new Date())}`, marginLeft);
       doc.fillColor("#000000");
       doc.moveDown(0.7);
     }

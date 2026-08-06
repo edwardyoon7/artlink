@@ -1,3 +1,5 @@
+import { formatDateKST } from "@/lib/format-date";
+
 export const WEEKDAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"] as const;
 export type WeekdayCode = (typeof WEEKDAYS)[number];
 
@@ -32,5 +34,5 @@ export function getUpcomingDates(weekdays: WeekdayCode[], weeksAhead = 4): Date[
 
 export function formatDateWithWeekday(date: Date): string {
   const code = JS_DAY_TO_CODE[date.getDay()];
-  return `${date.toLocaleDateString("ko-KR")} (${WEEKDAY_LABEL[code]})`;
+  return `${formatDateKST(date)} (${WEEKDAY_LABEL[code]})`;
 }

@@ -9,6 +9,7 @@ import {
   CERTIFICATE_REPRESENTATIVE_TITLE,
   type CertificateData,
 } from "@/lib/certificate";
+import { formatDateKST } from "@/lib/format-date";
 
 // artwork-export-formats.ts와 동일한 이유로 TTF 고정 (WOFF2는 서버 환경에서 압축 해제가
 // 불안정했음). 영문 전용 텍스트(헤드라인·라벨)는 pdfkit 내장 Times 계열을 써서 별도 폰트
@@ -21,7 +22,7 @@ const INK_MUTED = "#6b7280";
 
 function formatDate(d: Date | null) {
   if (!d) return "-";
-  return new Date(d).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
+  return formatDateKST(d, { year: "numeric", month: "long", day: "numeric" });
 }
 
 function formatSize(widthCm: number | null, heightCm: number | null) {

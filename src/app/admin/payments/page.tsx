@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { SiteHeader } from "@/components/site-header";
 import { AdminPaymentRow } from "@/components/admin-payment-row";
 import { GOODS_FEE_TYPE_LABELS } from "@/lib/goods";
+import { formatDateTimeKST } from "@/lib/format-date";
 
 export default async function AdminPaymentsPage() {
   const session = await auth();
@@ -56,12 +57,12 @@ export default async function AdminPaymentsPage() {
                   amount: payment.amount,
                   status: payment.status,
                   depositorName: payment.depositorName,
-                  createdAt: payment.createdAt.toLocaleString("ko-KR"),
+                  createdAt: formatDateTimeKST(payment.createdAt),
                   artworkTitle: payment.artwork?.title ?? null,
                   artworkPrice: payment.artwork?.price ?? null,
                   region: booking?.region ?? null,
                   instructorName: booking?.instructor?.name ?? null,
-                  preferredDate: booking?.preferredDate.toLocaleString("ko-KR") ?? null,
+                  preferredDate: booking ? formatDateTimeKST(booking.preferredDate) : null,
                   curriculum: booking?.curriculum ?? null,
                   goodsTitle: payment.goods?.title ?? null,
                 }}

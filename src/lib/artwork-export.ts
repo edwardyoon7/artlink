@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { formatDateTimeKST } from "@/lib/format-date";
 
 export const SELLER_NAME = "애다기획(아트이음)";
 
@@ -22,9 +23,7 @@ export async function getSoldArtworkRows(): Promise<SoldArtworkRow[]> {
   });
 
   return artworks.map((artwork) => ({
-    soldAt: artwork.soldAt
-      ? new Date(artwork.soldAt).toLocaleString("ko-KR")
-      : "",
+    soldAt: artwork.soldAt ? formatDateTimeKST(artwork.soldAt) : "",
     title: artwork.title,
     editionNumber: artwork.editionNumber ?? "",
     // 세무 제출용 매출장 기준 — 실제 최종 판매가(협상이 있었다면 그 금액)를 우선하고,

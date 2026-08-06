@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { SiteHeader } from "@/components/site-header";
 import { ArtistProfileApplyForm } from "@/components/artist-profile-apply-form";
 import { PROFILE_FEE, PROFILE_FEE_PROMO, PROFILE_FEE_PROMO_DEADLINE, isProfileFeePromoActive } from "@/lib/pricing";
+import { formatDateKST } from "@/lib/format-date";
 
 export default async function NewArtistProfilePage() {
   const session = await auth();
@@ -34,7 +35,7 @@ export default async function NewArtistProfilePage() {
                 <span className="text-ink/50 line-through">{PROFILE_FEE.toLocaleString()}원</span>
               </p>
               <p className="mt-1 text-ink/60">
-                {PROFILE_FEE_PROMO_DEADLINE.toLocaleDateString("ko-KR")}까지 신청 시 50% 할인가로
+                {formatDateKST(PROFILE_FEE_PROMO_DEADLINE)}까지 신청 시 50% 할인가로
                 적용됩니다. 이후에는 정가 {PROFILE_FEE.toLocaleString()}원입니다.
               </p>
             </>
