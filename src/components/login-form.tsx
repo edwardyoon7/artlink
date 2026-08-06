@@ -25,7 +25,11 @@ export function LoginForm() {
     setSubmitting(false);
 
     if (result?.error) {
-      setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+      setError(
+        result.code === "AccountLocked"
+          ? "비밀번호를 여러 번 잘못 입력해 일시적으로 로그인이 제한되었습니다. 15분 후 다시 시도해주세요."
+          : "이메일 또는 비밀번호가 올바르지 않습니다."
+      );
       return;
     }
 

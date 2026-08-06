@@ -99,6 +99,11 @@
 작가 등록/전환 신청은 로그인 기반으로 운영됩니다.
 
 - **인증**: Auth.js(NextAuth v5) Credentials 로그인, JWT 세션에 `role`(`APPLICANT`/`ADMIN`) 포함
+- **로그인 무차별 대입(brute force) 방어**: `User.failedLoginAttempts`/`lockedUntil` 필드로 관리
+  (`src/lib/login-security.ts`, `src/auth.ts`) — 한 계정에서 비밀번호를 5회 연속 틀리면 15분간
+  로그인 자체가 잠김(잠긴 동안은 정확한 비밀번호를 넣어도 거부). 로그인 성공 시 카운트 자동
+  초기화. 잠금 상태는 `LoginForm`이 Auth.js의 `code=AccountLocked`로 구분해 일반 오류 메시지와
+  다른 안내 문구를 보여줌.
 - **데이터베이스**: SQLite + Prisma ORM (`@prisma/adapter-better-sqlite3` 드라이버 어댑터 필요 — Prisma 7부터 필수)
   - `User`(이름·전화번호·이메일·비밀번호 해시·비밀번호 힌트 질문/답변 해시·role), `Application`(type: PRO/AMATEUR, status: PENDING→RECEIVED→APPROVED/REJECTED), `Document`(첨부 증빙서류)
 - **파일 업로드**: 증빙서류는 `public/`이 아닌 프로젝트 루트의 `uploads/<applicationId>/`에 비공개로 저장 (URL로 직접 노출되지 않음)

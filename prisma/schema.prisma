@@ -36,6 +36,10 @@ model User {
   passwordHash           String
   passwordHintQuestion   String?
   passwordHintAnswerHash String?
+  // 로그인 무차별 대입(brute force) 방어용 — src/lib/login-security.ts의 임계값만큼
+  // 연속 실패하면 lockedUntil까지 로그인 자체를 거부한다 (src/auth.ts의 authorize 참고)
+  failedLoginAttempts    Int               @default(0)
+  lockedUntil            DateTime?
   role         Role              @default(APPLICANT)
   artistLevel  ApplicationType?
   createdAt    DateTime          @default(now())
