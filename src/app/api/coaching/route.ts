@@ -42,6 +42,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "선택한 지역을 담당하는 강사가 아닙니다." }, { status: 400 });
   }
 
+  // /api/instructors/[id]/slots가 GET 시점에 이미 걸러주지만, 그 사이 다른 사람이 같은
+  // 시간대를 먼저 예약해버리는 경합(race condition)을 막기 위해 제출 시점에 한 번 더 확인.
+  const requestedEnd = new Date(parsedDate.getTime() + durationHours * 60 * 60 * 1000);
+  const conflicting = await prisma.coachingBooking.findMany({
+    where: {
+      instructorId,
+      status: { not: "CANCELLED" },
+      preferredDate: { lt: requestedEnd },
+    },
+    select: { preferredDate: true, durationHours: true },
+  });
+  const hasConflict = conflicting.some((b) => {
+    const bEnd = new Date(b.preferredDate.getTime() + b.durationHours * 60 * 60 * 1000);
+    return parsedDate < bEnd && requestedEnd > b.preferredDate;
+  });
+  if (hasConflict) {
+    return NextResponse.json(
+      { error: "방금 다른 신청자가 선택한 시간대입니다. 다른 시간을 선택해주세요." },
+      { status: 409 },
+    );
+  }
+
   const booking = await prisma.coachingBooking.create({
     data: {
       curriculum,
