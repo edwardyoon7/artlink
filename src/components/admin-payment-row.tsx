@@ -17,6 +17,7 @@ type Payment = {
   region: string | null;
   instructorName: string | null;
   preferredDate: string | null;
+  durationHours: number | null;
   curriculum: string | null;
   goodsTitle: string | null;
 };
@@ -61,7 +62,12 @@ export function AdminPaymentRow({ payment }: { payment: Payment }) {
         )}
         {payment.instructorName && <p>담당 강사: {payment.instructorName}</p>}
         {payment.region && <p>지역: {payment.region}</p>}
-        {payment.preferredDate && <p>희망 일시: {payment.preferredDate}</p>}
+        {payment.preferredDate && (
+          <p>
+            희망 일시: {payment.preferredDate}
+            {payment.durationHours != null && ` · ${payment.durationHours}시간`}
+          </p>
+        )}
         {payment.curriculum && <p>요청 내용: {payment.curriculum}</p>}
         {payment.goodsTitle && <p>굿즈: {payment.goodsTitle}</p>}
         <p>

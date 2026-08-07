@@ -4,27 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { WEEKDAYS, timeStringToMinutes, type WeekdayCode } from "@/lib/schedule";
 import { REGIONS } from "@/lib/regions";
 
-export async function GET(request: Request) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(request.url);
-  const region = searchParams.get("region");
-
-  const instructors = await prisma.instructor.findMany({
-    where: region ? { regions: { some: { region } } } : undefined,
-    include: { regions: true, availableDays: true },
-    orderBy: { name: "asc" },
-  });
-
-  return NextResponse.json({ instructors });
-}
-
 type WeekdayRangeInput = { weekday: WeekdayCode; startTime: string; endTime: string };
 
-// weekdays 배열을 검증하고 Prisma create용 형태로 변환. 형식이 잘못되면 에러 메시지를 던진다.
 function parseWeekdayRanges(weekdays: unknown): { weekday: WeekdayCode; startMinute: number; endMinute: number }[] {
   if (!Array.isArray(weekdays)) {
     throw new Error("가능 요일을 하나 이상 선택해주세요.");
@@ -49,12 +30,19 @@ function parseWeekdayRanges(weekdays: unknown): { weekday: WeekdayCode; startMin
   return parsed;
 }
 
-export async function POST(request: Request) {
+// 강사 정보(이메일·학력·전시·수상경력·담당지역·가능 요일 시간대)를 전체 교체 방식으로 수정한다.
+// InstructorAvailability는 항상 기존 것을 지우고 다시 만든다 — 부분 수정(특정 요일만 변경)보다
+// 폼 전체를 다시 제출하는 방식이 훨씬 단순하고, 강사 수가 적어 성능상 문제도 없다.
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
   }
 
+  const { id } = await params;
   const body = await request.json();
   const { name, email, education, exhibitions, awards, regions, weekdays } = body;
 
@@ -78,17 +66,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: (err as Error).message }, { status: 400 });
   }
 
-  const instructor = await prisma.instructor.create({
-    data: {
-      name,
-      email: email.trim(),
-      education: typeof education === "string" ? education : null,
-      exhibitions: typeof exhibitions === "string" ? exhibitions : null,
-      awards: typeof awards === "string" ? awards : null,
-      regions: { create: regionList.map((region) => ({ region })) },
-      availableDays: { create: weekdayRanges },
-    },
-    include: { regions: true, availableDays: true },
+  const existing = await prisma.instructor.findUnique({ where: { id } });
+  if (!existing) {
+    return NextResponse.json({ error: "강사를 찾을 수 없습니다." }, { status: 404 });
+  }
+
+  const instructor = await prisma.$transaction(async (tx) => {
+    await tx.instructorRegion.deleteMany({ where: { instructorId: id } });
+    await tx.instructorAvailability.deleteMany({ where: { instructorId: id } });
+    return tx.instructor.update({
+      where: { id },
+      data: {
+        name,
+        email: email.trim(),
+        education: typeof education === "string" ? education : null,
+        exhibitions: typeof exhibitions === "string" ? exhibitions : null,
+        awards: typeof awards === "string" ? awards : null,
+        regions: { create: regionList.map((region) => ({ region })) },
+        availableDays: { create: weekdayRanges },
+      },
+      include: { regions: true, availableDays: true },
+    });
   });
 
   return NextResponse.json({ ok: true, instructor });

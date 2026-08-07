@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SiteHeader } from "@/components/site-header";
 import { InstructorForm } from "@/components/instructor-form";
-import { WEEKDAY_LABEL } from "@/lib/schedule";
+import { InstructorEditor } from "@/components/instructor-editor";
 
 export default async function AdminInstructorsPage() {
   const session = await auth();
@@ -28,18 +28,7 @@ export default async function AdminInstructorsPage() {
             <p className="text-sm text-ink/60">등록된 강사가 없습니다.</p>
           )}
           {instructors.map((instructor) => (
-            <div key={instructor.id} className="rounded-sm border border-ink/20 p-6">
-              <p className="font-[var(--font-serif-kr)] text-lg">{instructor.name}</p>
-              <p className="mt-2 text-sm text-ink/70">
-                담당 지역: {instructor.regions.map((r) => r.region).join(", ")}
-              </p>
-              <p className="text-sm text-ink/70">
-                가능 요일: {instructor.availableDays.map((d) => WEEKDAY_LABEL[d.weekday]).join(", ")}
-              </p>
-              {instructor.education && <p className="mt-1 text-sm text-ink/60">학력: {instructor.education}</p>}
-              {instructor.exhibitions && <p className="text-sm text-ink/60">전시: {instructor.exhibitions}</p>}
-              {instructor.awards && <p className="text-sm text-ink/60">수상경력: {instructor.awards}</p>}
-            </div>
+            <InstructorEditor key={instructor.id} instructor={instructor} />
           ))}
         </div>
 

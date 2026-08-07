@@ -3,12 +3,29 @@
 // 받는 구조라는 걸 확인하고 신규 작가 진입장벽을 낮추기 위해 3,000원 균일 부과에서 변경).
 export const FREE_ARTWORK_COUNT = 3;
 export const LISTING_FEE = 2_000;
-export const COACHING_FEE = 100_000; // 코칭 서비스 비용 (세션 1회당)
 export const COMMISSION_RATE = 0.3; // 위탁판매 수수료율 (판매가의 30%)
 
 // existingArtworkCount: 이번에 등록하는 작품을 제외한, 이 작가가 이미 등록한 작품 수
 export function getListingFee(existingArtworkCount: number) {
   return existingArtworkCount < FREE_ARTWORK_COUNT ? 0 : LISTING_FEE;
+}
+
+// 코칭 서비스 비용 — 2026-08-07부터 시간대별 요금제로 개편(주 2회 진행 기준).
+// 1주 최대 3회까지 예약 가능(안내 문구, 시스템상 강제하지는 않음).
+export const COACHING_DURATIONS = [2, 4] as const;
+export type CoachingDurationHours = (typeof COACHING_DURATIONS)[number];
+
+const COACHING_FEE_BY_DURATION: Record<CoachingDurationHours, number> = {
+  2: 60_000,
+  4: 100_000,
+};
+
+export function isCoachingDurationHours(value: unknown): value is CoachingDurationHours {
+  return typeof value === "number" && COACHING_DURATIONS.includes(value as CoachingDurationHours);
+}
+
+export function getCoachingFee(durationHours: CoachingDurationHours): number {
+  return COACHING_FEE_BY_DURATION[durationHours];
 }
 
 // 프로 작가 프로필 노출 프리미엄 서비스 — 정가 20,000원, 프로모션 기간(~2026-11-30 KST)에는 50% 할인.

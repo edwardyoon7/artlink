@@ -36,3 +36,20 @@ export function formatDateWithWeekday(date: Date): string {
   const code = JS_DAY_TO_CODE[date.getDay()];
   return `${formatDateKST(date)} (${WEEKDAY_LABEL[code]})`;
 }
+
+/** "HH:mm" 문자열을 자정 기준 분으로 변환. 형식이 잘못되면 null. */
+export function timeStringToMinutes(time: string): number | null {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(time);
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+  return hours * 60 + minutes;
+}
+
+/** 자정 기준 분을 "HH:mm" 문자열로 변환. */
+export function minutesToTimeString(totalMinutes: number): string {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}

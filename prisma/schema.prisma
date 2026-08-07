@@ -135,6 +135,10 @@ model CoachingBooking {
   curriculum    String
   region        String?
   preferredDate DateTime
+  // 2시간/4시간 중 선택 — src/lib/pricing.ts의 getCoachingFee(durationHours)로 결제 금액을
+  // 계산한다. 이 필드가 생기기 전(균일 100,000원 시절)에 만들어진 예약은 4로 채워
+  // 기존 결제 금액(100,000원)과 값이 일치하도록 맞춘다.
+  durationHours Int           @default(4)
   status        BookingStatus @default(PENDING)
   createdAt     DateTime      @default(now())
   artist        User          @relation(fields: [artistId], references: [id])
@@ -157,6 +161,10 @@ enum Weekday {
 model Instructor {
   id          String                   @id @default(cuid())
   name        String
+  // 예약 최종 확정 시 강사에게 알림 메일을 보내기 위한 주소. 이 필드가 생기기 전에
+  // 등록된 강사는 값이 비어 있을 수 있어, 관리자가 /admin/instructors에서 직접
+  // 채워 넣을 수 있다(PATCH /api/instructors/[id]).
+  email       String?
   education   String?
   exhibitions String?
   awards      String?
@@ -178,6 +186,11 @@ model InstructorRegion {
 model InstructorAvailability {
   id           String     @id @default(cuid())
   weekday      Weekday
+  // 자정 기준 분 단위(예: 14:00 = 840). 이 두 필드가 생기기 전(요일만 있던 시절)에
+  // 등록된 요일은 값이 비어 있을 수 있어, 관리자가 시간대를 다시 채워 넣기 전까지는
+  // 예약 가능 시간대 계산에서 제외한다(src/lib/schedule.ts 참고).
+  startMinute  Int?
+  endMinute    Int?
   instructor   Instructor @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   instructorId String
 

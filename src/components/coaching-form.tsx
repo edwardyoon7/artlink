@@ -4,12 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RegionMap } from "@/components/region-map";
 import { InstructorPicker } from "@/components/instructor-picker";
+import { COACHING_DURATIONS, getCoachingFee, type CoachingDurationHours } from "@/lib/pricing";
 
 export function CoachingForm() {
   const router = useRouter();
   const [region, setRegion] = useState<string | null>(null);
   const [instructorId, setInstructorId] = useState<string | null>(null);
   const [preferredDate, setPreferredDate] = useState<string | null>(null);
+  const [durationHours, setDurationHours] = useState<CoachingDurationHours | null>(null);
   const [curriculum, setCurriculum] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -25,6 +27,10 @@ export function CoachingForm() {
       setError("지역·강사·희망 날짜를 모두 선택해주세요.");
       return;
     }
+    if (!durationHours) {
+      setError("코칭 시간을 선택해주세요.");
+      return;
+    }
     if (!curriculum.trim()) {
       setError("배우고 싶은 내용을 입력해주세요.");
       return;
@@ -35,7 +41,7 @@ export function CoachingForm() {
     const res = await fetch("/api/coaching", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ region, instructorId, preferredDate, curriculum }),
+      body: JSON.stringify({ region, instructorId, preferredDate, durationHours, curriculum }),
     });
     setSubmitting(false);
 
@@ -79,8 +85,36 @@ export function CoachingForm() {
 
       {instructorId && preferredDate && (
         <div>
+          <p className="text-sm text-ink/70">3. 코칭 시간을 선택해주세요</p>
+          <div className="mt-3 flex gap-3">
+            {COACHING_DURATIONS.map((hours) => {
+              const isSelected = durationHours === hours;
+              return (
+                <button
+                  key={hours}
+                  type="button"
+                  onClick={() => setDurationHours(hours)}
+                  className={`flex-1 rounded-sm border px-4 py-3 text-sm ${
+                    isSelected
+                      ? "border-terracotta bg-terracotta/10 text-ink"
+                      : "border-ink/20 text-ink/70 hover:border-ink"
+                  }`}
+                >
+                  <span className="block font-medium">{hours}시간</span>
+                  <span className="mt-0.5 block text-xs text-ink/60">
+                    {getCoachingFee(hours).toLocaleString()}원
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {instructorId && preferredDate && durationHours && (
+        <div>
           <label className="block text-sm">
-            <span className="text-ink/70">3. 배우고 싶은 내용 / 상담 요청사항</span>
+            <span className="text-ink/70">4. 배우고 싶은 내용 / 상담 요청사항</span>
             <textarea
               rows={4}
               value={curriculum}

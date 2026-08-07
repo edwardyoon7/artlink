@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { COACHING_FEE } from "@/lib/pricing";
+import { getCoachingFee, isCoachingDurationHours } from "@/lib/pricing";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { curriculum, preferredDate, region, instructorId } = body;
+  const { curriculum, preferredDate, region, instructorId, durationHours } = body;
 
   if (typeof curriculum !== "string" || !curriculum.trim()) {
     return NextResponse.json({ error: "희망 커리큘럼을 입력해주세요." }, { status: 400 });
@@ -29,6 +29,9 @@ export async function POST(request: Request) {
   }
   if (typeof instructorId !== "string" || !instructorId.trim()) {
     return NextResponse.json({ error: "강사를 선택해주세요." }, { status: 400 });
+  }
+  if (!isCoachingDurationHours(durationHours)) {
+    return NextResponse.json({ error: "코칭 시간(2시간/4시간)을 선택해주세요." }, { status: 400 });
   }
 
   const instructor = await prisma.instructor.findUnique({
@@ -44,12 +47,13 @@ export async function POST(request: Request) {
       curriculum,
       region,
       preferredDate: parsedDate,
+      durationHours,
       artistId: user.id,
       instructorId,
       payment: {
         create: {
           type: "COACHING_FEE",
-          amount: COACHING_FEE,
+          amount: getCoachingFee(durationHours),
         },
       },
     },

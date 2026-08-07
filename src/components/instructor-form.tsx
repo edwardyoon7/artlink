@@ -3,17 +3,21 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { REGIONS } from "@/lib/regions";
-import { WEEKDAYS, WEEKDAY_LABEL } from "@/lib/schedule";
+import {
+  WeekdayRangePicker,
+  createEmptyWeekdayRangeState,
+  type WeekdayRangeState,
+} from "@/components/weekday-range-picker";
 
 export function InstructorForm() {
   const router = useRouter();
   const [regions, setRegions] = useState<string[]>([]);
-  const [weekdays, setWeekdays] = useState<string[]>([]);
+  const [dayRanges, setDayRanges] = useState<WeekdayRangeState>(createEmptyWeekdayRangeState());
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  function toggle(list: string[], setList: (v: string[]) => void, value: string) {
-    setList(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
+  function toggleRegion(region: string) {
+    setRegions((list) => (list.includes(region) ? list.filter((r) => r !== region) : [...list, region]));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -22,11 +26,16 @@ export function InstructorForm() {
     setError("");
 
     const formData = new FormData(event.currentTarget);
+    const weekdays = Object.entries(dayRanges)
+      .filter(([, range]) => range.enabled)
+      .map(([weekday, range]) => ({ weekday, startTime: range.start, endTime: range.end }));
+
     const res = await fetch("/api/instructors", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: formData.get("name"),
+        email: formData.get("email"),
         education: formData.get("education"),
         exhibitions: formData.get("exhibitions"),
         awards: formData.get("awards"),
@@ -44,7 +53,7 @@ export function InstructorForm() {
     }
 
     setRegions([]);
-    setWeekdays([]);
+    setDayRanges(createEmptyWeekdayRangeState());
     (event.target as HTMLFormElement).reset();
     router.refresh();
   }
@@ -55,6 +64,15 @@ export function InstructorForm() {
         <span className="text-ink/70">강사명</span>
         <input
           name="name"
+          required
+          className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-2 outline-none focus:border-ink"
+        />
+      </label>
+      <label className="block text-sm">
+        <span className="text-ink/70">이메일 (예약 확정 시 알림 발송용)</span>
+        <input
+          name="email"
+          type="email"
           required
           className="mt-1 w-full rounded-sm border border-ink/20 bg-base px-3 py-2 outline-none focus:border-ink"
         />
@@ -88,7 +106,7 @@ export function InstructorForm() {
             <button
               type="button"
               key={region}
-              onClick={() => toggle(regions, setRegions, region)}
+              onClick={() => toggleRegion(region)}
               className={`rounded-full border px-3 py-1 text-xs ${
                 regions.includes(region) ? "border-ink bg-ink text-base" : "border-ink/20 text-ink/70"
               }`}
@@ -100,20 +118,9 @@ export function InstructorForm() {
       </div>
 
       <div className="text-sm">
-        <span className="text-ink/70">가능 요일</span>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {WEEKDAYS.map((day) => (
-            <button
-              type="button"
-              key={day}
-              onClick={() => toggle(weekdays, setWeekdays, day)}
-              className={`rounded-full border px-3 py-1 text-xs ${
-                weekdays.includes(day) ? "border-terracotta bg-terracotta text-base" : "border-ink/20 text-ink/70"
-              }`}
-            >
-              {WEEKDAY_LABEL[day]}
-            </button>
-          ))}
+        <span className="text-ink/70">가능 요일 및 시간</span>
+        <div className="mt-2">
+          <WeekdayRangePicker value={dayRanges} onChange={setDayRanges} />
         </div>
       </div>
 

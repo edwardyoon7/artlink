@@ -63,6 +63,7 @@ export default async function AdminPaymentsPage() {
                   region: booking?.region ?? null,
                   instructorName: booking?.instructor?.name ?? null,
                   preferredDate: booking ? formatDateTimeKST(booking.preferredDate) : null,
+                  durationHours: booking?.durationHours ?? null,
                   curriculum: booking?.curriculum ?? null,
                   goodsTitle: payment.goods?.title ?? null,
                 }}

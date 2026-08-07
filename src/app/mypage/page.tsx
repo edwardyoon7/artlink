@@ -346,7 +346,8 @@ export default async function MyPage() {
                   </div>
                   <p className="mt-2 text-sm text-ink/70">
                     {booking.region && `${booking.region} · `}
-                    {booking.instructor?.name && `${booking.instructor.name} 강사`}
+                    {booking.instructor?.name && `${booking.instructor.name} 강사 · `}
+                    {booking.durationHours}시간
                   </p>
                   <p className="mt-1 text-sm text-ink/70">{booking.curriculum}</p>
                   {booking.payment && booking.payment.status !== "CONFIRMED" && (
