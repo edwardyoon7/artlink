@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export const CERTIFICATE_REPRESENTATIVE_TITLE = "아트이음 대표";
 export const CERTIFICATE_REPRESENTATIVE_NAME = "윤진수";
 export const CERTIFICATE_COMPANY_ADDRESS = "경기도 김포시 사우동 923 보보스프라자 3층";
-export const CERTIFICATE_COMPANY_CONTACT = "010-7406-6537 · edwardyoon7@gmail.com";
+export const CERTIFICATE_COMPANY_CONTACT = "010-7406-6537 · edwardyoon7@artieum.kr";
 
 export type CertificateData = {
   certificateNumber: string;

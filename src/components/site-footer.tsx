@@ -12,7 +12,7 @@ export function SiteFooter() {
         </div>
         <div className="space-y-1 text-ink/60">
           <p>경기도 김포시 사우동 923 보보스프라자 3층</p>
-          <p>010-7406-6537 · edwardyoon7@gmail.com</p>
+          <p>010-7406-6537 · edwardyoon7@artieum.kr</p>
         </div>
       </div>
       <p className="mx-auto mt-8 max-w-6xl text-center text-xs text-ink/40">

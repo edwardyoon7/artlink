@@ -184,7 +184,7 @@ export default async function Home() {
             작가 등록, 코칭 신청, 작품 문의를 남겨주시면 순서대로 안내드립니다.
           </p>
           <a
-            href="mailto:edwardyoon7@gmail.com"
+            href="mailto:edwardyoon7@artieum.kr"
             className="mt-10 inline-block rounded-full bg-terracotta px-8 py-3 text-sm tracking-wide text-base"
           >
             문의하기
