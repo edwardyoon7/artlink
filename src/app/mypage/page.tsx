@@ -22,6 +22,7 @@ const ARTWORK_STATUS_LABEL: Record<string, string> = {
 
 const BOOKING_STATUS_LABEL: Record<string, string> = {
   PENDING: "입금 대기",
+  PAYMENT_CONFIRMED: "입금 확인됨 · 강사 확인 중",
   CONFIRMED: "예약 확정",
   COMPLETED: "코칭 완료",
   CANCELLED: "취소됨",

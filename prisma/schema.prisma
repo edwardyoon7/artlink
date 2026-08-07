@@ -125,6 +125,10 @@ model Artwork {
 
 enum BookingStatus {
   PENDING
+  // 입금은 확인됐지만 관리자가 강사에게 해당 시간 가능 여부를 아직 재확인하지 않은 상태.
+  // /api/payments/[id]/status가 코칭 결제를 CONFIRMED 처리할 때 여기로 전환하고,
+  // 이후 관리자가 /api/coaching-bookings/[id]/confirm으로 최종 확정해야 CONFIRMED가 된다.
+  PAYMENT_CONFIRMED
   CONFIRMED
   COMPLETED
   CANCELLED

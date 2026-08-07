@@ -34,9 +34,11 @@ export async function PATCH(
       });
     }
     if (payment.coachingBookingId) {
+      // 입금 확인만으로 바로 최종 확정하지 않는다 — 관리자가 강사에게 해당 시간 가능 여부를
+      // 재확인한 뒤 /api/coaching-bookings/[id]/confirm으로 별도 최종 확정해야 CONFIRMED가 됨.
       await prisma.coachingBooking.update({
         where: { id: payment.coachingBookingId },
-        data: { status: "CONFIRMED" },
+        data: { status: "PAYMENT_CONFIRMED" },
       });
     }
     if (payment.goodsId) {
