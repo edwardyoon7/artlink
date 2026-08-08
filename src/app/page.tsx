@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
@@ -6,6 +7,7 @@ import { GoodsSlideshow } from "@/components/goods-slideshow";
 import { ThemeBackground } from "@/components/theme-background";
 import { HomeHero } from "@/components/home-hero";
 import { AnnouncementPopup } from "@/components/announcement-popup";
+import { CoachingGuideButton } from "@/components/coaching-guide-button";
 import { prisma } from "@/lib/prisma";
 import { getDailyFeaturedArtworks } from "@/lib/home-rotation";
 
@@ -91,6 +93,7 @@ export default async function Home() {
                 step="02"
                 title="1:1 코칭"
                 description="작가로 성장할 수 있도록 개인 맞춤 코칭을 제공합니다."
+                action={<CoachingGuideButton />}
               />
               <EducationStep
                 step="03"
@@ -269,15 +272,20 @@ function EducationStep({
   step,
   title,
   description,
+  action,
 }: {
   step: string;
   title: string;
   description: string;
+  action?: ReactNode;
 }) {
   return (
     <div>
       <span className="font-[var(--font-serif-en)] text-2xl text-terracotta">{step}</span>
-      <h3 className="mt-3 font-[var(--font-serif-kr)] text-xl">{title}</h3>
+      <div className="mt-3 flex items-center gap-3">
+        <h3 className="font-[var(--font-serif-kr)] text-xl">{title}</h3>
+        {action}
+      </div>
       <p className="mt-2 text-sm text-ink/70">{description}</p>
     </div>
   );

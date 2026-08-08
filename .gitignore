@@ -56,3 +56,6 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# 홍보·내부 문서용으로 로컬에서 생성한 이미지/PDF 등 결과물 (소스 아님, git 추적 제외)
+/exports
