@@ -150,6 +150,15 @@ export default async function Home() {
             작가의 아이디어를 실물 굿즈로 완성해가는 과정입니다. Artieum가 아이디어 컨설팅·제작
             의뢰·샘플 검토를 함께합니다.
           </p>
+          <div className="mt-10 overflow-hidden rounded-sm border border-ink/10">
+            <Image
+              src="/goods-images/goods-idea-banner.jpg"
+              alt="작품과 일상을 잇는 굿즈 아이디어 — 작가 작품을 활용한 굿즈 제작 예시"
+              width={2304}
+              height={960}
+              className="h-auto w-full"
+            />
+          </div>
           {goodsItems.length === 0 ? (
             <p className="mt-12 text-sm text-ink/50">아직 등록된 굿즈가 없습니다.</p>
           ) : (
