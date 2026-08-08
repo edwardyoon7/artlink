@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { sendCoachingConfirmationEmails } from "@/lib/mailer";
 
 // 관리자가 입금 확인 이후 강사에게 해당 시간이 실제로 가능한지 재확인을 마치고 누르는
 // "최종 확정" 액션. PAYMENT_CONFIRMED 상태일 때만 허용 — 아직 입금 확인 전(PENDING)이거나
@@ -29,7 +30,24 @@ export async function PATCH(
   const updated = await prisma.coachingBooking.update({
     where: { id },
     data: { status: "CONFIRMED" },
+    include: { artist: true, instructor: true },
   });
+
+  // 메일 발송은 확정 처리 자체를 막지 않는 부가 기능(best-effort) — sendMail 내부에서
+  // 이미 실패를 흡수하므로 여기선 그냥 기다리기만 한다. 강사가 아직 없거나(instructorId
+  // 미배정) 이메일이 비어 있으면 mailer.ts가 알아서 건너뛴다.
+  if (updated.instructor) {
+    await sendCoachingConfirmationEmails({
+      applicantEmail: updated.artist.email,
+      applicantName: updated.artist.name,
+      instructorEmail: updated.instructor.email,
+      instructorName: updated.instructor.name,
+      curriculum: updated.curriculum,
+      region: updated.region,
+      preferredDate: updated.preferredDate,
+      durationHours: updated.durationHours,
+    });
+  }
 
   return NextResponse.json({ ok: true, booking: updated });
 }
