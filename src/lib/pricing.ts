@@ -3,7 +3,23 @@
 // 받는 구조라는 걸 확인하고 신규 작가 진입장벽을 낮추기 위해 3,000원 균일 부과에서 변경).
 export const FREE_ARTWORK_COUNT = 3;
 export const LISTING_FEE = 2_000;
-export const COMMISSION_RATE = 0.3; // 위탁판매 수수료율 (판매가의 30%)
+export const COMMISSION_RATE = 0.3; // 위탁판매 정상 수수료율 (판매가의 30%)
+
+// 판매 수수료 프로모션 — 2026년 한 해, 신규 작가 유치를 위해 30%→25%로 5%p 인하
+// (2026-08-08 결정). 2026-12-31(KST)까지 "판매완료 처리(soldAt)"된 건에만 적용되고,
+// 2027-01-01부터는 정상 요율(30%)로 자동 복귀한다. 컬렉터가 지불하는 가격(price/finalPrice)
+// 에는 영향이 없고, 작가에게 돌아가는 정산액에만 영향을 준다 — 즉 "가격 할인"이 아니라
+// "작가 수익 우대" 프로모션.
+export const COMMISSION_PROMO_RATE = 0.25;
+export const COMMISSION_PROMO_DEADLINE = new Date("2026-12-31T23:59:59+09:00");
+
+export function isCommissionPromoActive(now: Date = new Date()) {
+  return now.getTime() <= COMMISSION_PROMO_DEADLINE.getTime();
+}
+
+export function getCommissionRate(now: Date = new Date()): number {
+  return isCommissionPromoActive(now) ? COMMISSION_PROMO_RATE : COMMISSION_RATE;
+}
 
 // existingArtworkCount: 이번에 등록하는 작품을 제외한, 이 작가가 이미 등록한 작품 수
 export function getListingFee(existingArtworkCount: number) {
@@ -43,9 +59,12 @@ export function isProfileFeePromoActive(now: Date = new Date()) {
   return now.getTime() <= PROFILE_FEE_PROMO_DEADLINE.getTime();
 }
 
-export function calcSettlement(price: number) {
-  const commission = Math.round(price * COMMISSION_RATE);
-  return { commission, settlement: price - commission };
+// now: 수수료율을 어느 시점 기준으로 적용할지 — 이미 판매완료된 건은 그 작품의 soldAt을,
+// 아직 판매 전인 건(미리보기)은 기본값(현재 시각)을 넘겨서 쓴다.
+export function calcSettlement(price: number, now: Date = new Date()) {
+  const rate = getCommissionRate(now);
+  const commission = Math.round(price * rate);
+  return { commission, settlement: price - commission, rate };
 }
 
 export function getBankInfo() {

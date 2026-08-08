@@ -3,8 +3,17 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SiteHeader } from "@/components/site-header";
 import { ArtworkForm } from "@/components/artwork-form";
-import { FREE_ARTWORK_COUNT, LISTING_FEE, COMMISSION_RATE, getListingFee } from "@/lib/pricing";
+import {
+  FREE_ARTWORK_COUNT,
+  LISTING_FEE,
+  COMMISSION_RATE,
+  COMMISSION_PROMO_RATE,
+  COMMISSION_PROMO_DEADLINE,
+  isCommissionPromoActive,
+  getListingFee,
+} from "@/lib/pricing";
 import { getPriceSuggestion } from "@/lib/price-suggestion";
+import { formatDateKST } from "@/lib/format-date";
 
 export default async function NewArtworkPage() {
   const session = await auth();
@@ -16,6 +25,7 @@ export default async function NewArtworkPage() {
   const suggestion = await getPriceSuggestion(session.user.id);
   const existingArtworkCount = await prisma.artwork.count({ where: { artistId: session.user.id } });
   const fee = getListingFee(existingArtworkCount);
+  const commissionPromoActive = isCommissionPromoActive();
 
   return (
     <div className="min-h-screen bg-base text-ink">
@@ -34,7 +44,15 @@ export default async function NewArtworkPage() {
               작품이 노출됩니다 (처음 {FREE_ARTWORK_COUNT}개 무료 등록은 모두 사용하셨습니다).
             </>
           )}{" "}
-          판매 시 수수료는 판매가의 {COMMISSION_RATE * 100}%입니다.
+          {commissionPromoActive ? (
+            <>
+              {formatDateKST(COMMISSION_PROMO_DEADLINE)}까지 판매완료 처리되면 수수료는 판매가의{" "}
+              {COMMISSION_PROMO_RATE * 100}%(프로모션)입니다. 이후 판매완료 처리되는 건은 정상
+              요율({COMMISSION_RATE * 100}%)이 적용됩니다.
+            </>
+          ) : (
+            <>판매 시 수수료는 판매가의 {COMMISSION_RATE * 100}%입니다.</>
+          )}
         </p>
         <ArtworkForm suggestion={suggestion} />
       </section>

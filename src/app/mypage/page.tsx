@@ -181,7 +181,10 @@ export default async function MyPage() {
               )}
               {artworks.map((artwork) => {
                 const settlementBasis = artwork.finalPrice ?? artwork.price;
-                const { commission, settlement } = calcSettlement(settlementBasis);
+                const { commission, settlement } = calcSettlement(
+                  settlementBasis,
+                  artwork.soldAt ?? undefined,
+                );
                 return (
                   <div key={artwork.id} className="rounded-sm border border-ink/20 p-6">
                     <div className="flex items-center justify-between">

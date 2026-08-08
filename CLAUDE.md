@@ -132,8 +132,14 @@
   `FREE_ARTWORK_COUNT`(3)개까지 무료**이고(결제 대기 없이 바로 `LISTED`로 노출), 그 이후 등록분부터
   작품 1점당 `LISTING_FEE`(`src/lib/pricing.ts`, 2,000원)가 발생합니다(2026-08-06, 경쟁 플랫폼 대부분이
   등록 자체는 무료이고 판매 시 수수료만 받는 구조라는 걸 확인하고 신규 작가 진입장벽을 낮추기 위해
-  3,000원 균일 부과에서 변경 — `getListingFee(existingArtworkCount)`). 판매 완료 시 수수료
-  30%(`COMMISSION_RATE`)를 뗀 금액이 정산액으로 계산됩니다. 이미지는 `runtime-uploads/artwork-uploads/`에
+  3,000원 균일 부과에서 변경 — `getListingFee(existingArtworkCount)`). 판매 완료 시 수수료를 뗀 금액이
+  정산액으로 계산되는데, **2026-08-08부터 2026-12-31(KST) "판매완료 처리"된 건은 30% 대신 25%
+  (`COMMISSION_PROMO_RATE`)가 적용되는 프로모션 기간**입니다 — 신규 작가 유치 목적으로 5%p 한시
+  인하, 2027-01-01부터는 정상 요율(`COMMISSION_RATE`, 30%)로 자동 복귀합니다(`getCommissionRate(now)`).
+  컬렉터가 지불하는 가격(`price`/`finalPrice`)에는 영향 없이 작가 정산액에만 영향을 주는 프로모션이라는
+  점에 유의 — "가격 할인"이 아니라 "작가 수익 우대"입니다. 어느 요율이 적용됐는지는 **작품을 등록한
+  시점이 아니라 실제로 판매완료 처리된 시점(`soldAt`)** 기준이라, 프로모션 기간에 등록해도 판매완료가
+  2027년으로 넘어가면 정상 요율이 적용됩니다. 이미지는 `runtime-uploads/artwork-uploads/`에
   저장되고 `src/app/artwork-uploads/[...path]/route.ts`가 서빙합니다(`public/`이 아님 — 이유는 해당
   라우트 파일의 주석 참고). 등록비가 있는 경우 결제가 `CONFIRMED`되어 `LISTED`(또는 `SOLD`) 상태가
   되면, 무료 등록분은 등록 즉시, 홈 화면 `#artworks` 섹션에 썸네일·작가명·가격과 함께 실제로

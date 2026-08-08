@@ -40,6 +40,7 @@ export default async function AdminArtworksPage() {
                 finalPrice: artwork.finalPrice,
                 status: artwork.status,
                 paymentStatus: artwork.payment?.status ?? "WAITING",
+                soldAt: artwork.soldAt,
               }}
             />
           ))}

@@ -12,6 +12,7 @@ type Artwork = {
   finalPrice: number | null;
   status: string;
   paymentStatus: string;
+  soldAt: Date | null;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -30,7 +31,9 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
   const [buyerContact, setBuyerContact] = useState("");
 
   const settlementBasis = artwork.finalPrice ?? artwork.price;
-  const { commission, settlement } = calcSettlement(settlementBasis);
+  // 이미 판매완료된 건은 그때(soldAt) 적용됐던 수수료율을 그대로 보여주고,
+  // 아직 판매 전(LISTED)인 건은 "지금 확정하면" 적용될 요율을 미리보기로 보여준다.
+  const { commission, settlement, rate } = calcSettlement(settlementBasis, artwork.soldAt ?? undefined);
   const finalPriceDiffersFromListed = Number(finalPrice) > 0 && Number(finalPrice) !== artwork.price;
 
   async function confirmSold() {
@@ -64,7 +67,8 @@ export function AdminArtworkRow({ artwork }: { artwork: Artwork }) {
       </div>
       <p className="mt-3 text-sm text-ink/70">
         {status === "SOLD" ? "최종 판매가" : "위탁 등록가"} {settlementBasis.toLocaleString()}원 ·
-        수수료(30%) {commission.toLocaleString()}원 · 작가 정산액 {settlement.toLocaleString()}원
+        수수료({Math.round(rate * 100)}%) {commission.toLocaleString()}원 · 작가 정산액{" "}
+        {settlement.toLocaleString()}원
       </p>
       {status === "SOLD" && artwork.finalPrice != null && artwork.finalPrice !== artwork.price && (
         <p className="mt-1 text-xs text-terracotta">

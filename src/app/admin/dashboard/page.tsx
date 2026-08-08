@@ -139,7 +139,7 @@ export default async function AdminDashboardPage() {
     waitingPayments,
     applicationGroups,
     artworkGroups,
-    soldArtworkSum,
+    soldArtworks,
     coachingGroups,
     goodsGroups,
     collectorCount,
@@ -161,7 +161,10 @@ export default async function AdminDashboardPage() {
     }),
     prisma.application.groupBy({ by: ["type", "status"], _count: { _all: true } }),
     prisma.artwork.groupBy({ by: ["status"], _count: { _all: true } }),
-    prisma.artwork.aggregate({ where: { status: "SOLD" }, _sum: { price: true } }),
+    prisma.artwork.findMany({
+      where: { status: "SOLD" },
+      select: { price: true, finalPrice: true, soldAt: true },
+    }),
     prisma.coachingBooking.groupBy({ by: ["status"], _count: { _all: true } }),
     prisma.goods.groupBy({ by: ["stage"], _count: { _all: true } }),
     prisma.user.count({ where: { role: "COLLECTOR" } }),
@@ -186,7 +189,14 @@ export default async function AdminDashboardPage() {
   const coachingCounts = Object.fromEntries(coachingGroups.map((g) => [g.status, g._count._all]));
   const goodsCounts = Object.fromEntries(goodsGroups.map((g) => [g.stage, g._count._all]));
 
-  const { settlement: soldSettlementTotal } = calcSettlement(soldArtworkSum._sum.price ?? 0);
+  // 정산액 총합은 "판매가 합계에 현재 수수료율을 곱하는" 방식이 아니라, 작품별로 그때
+  // (soldAt) 적용됐던 수수료율로 각각 계산한 뒤 합산해야 정확하다 — 프로모션 기간(25%)과
+  // 정상 기간(30%) 판매가 섞여 있으면 단일 요율로는 왜곡되기 때문. finalPrice(협상가)가
+  // 있으면 그 값을 우선 사용 — 등록가(price)만 쓰면 네고로 가격이 바뀐 건이 반영 안 됨.
+  const soldSettlementTotal = soldArtworks.reduce(
+    (sum, a) => sum + calcSettlement(a.finalPrice ?? a.price, a.soldAt ?? undefined).settlement,
+    0,
+  );
   const goodsInProgressCount =
     (goodsCounts.REQUESTED ?? 0) +
     (goodsCounts.CONSULTING ?? 0) +
