@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { GoodsCard } from "@/components/goods-card";
@@ -35,6 +36,17 @@ export default async function GoodsListPage({
           GOODS
         </p>
         <h1 className="mt-2 font-[var(--font-serif-kr)] text-3xl">전체 굿즈 ({total})</h1>
+
+        <div className="mt-10 overflow-hidden rounded-sm border border-ink/10">
+          <Image
+            src="/goods-images/goods-idea-banner.jpg"
+            alt="작품과 일상을 잇는 굿즈 아이디어 — 작가 작품을 활용한 굿즈 제작 예시"
+            width={2304}
+            height={960}
+            className="h-auto w-full"
+            priority
+          />
+        </div>
 
         {goodsList.length === 0 ? (
           <p className="mt-12 text-sm text-ink/50">등록된 굿즈가 없습니다.</p>
